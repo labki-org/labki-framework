@@ -21,32 +21,13 @@ if [ -f LocalSettings.php ]; then
   mv LocalSettings.php config/LocalSettings.php
 fi
 
-# Append Labki configuration if not already present
-if ! grep -q "Labki base configuration" config/LocalSettings.php; then
-  cat >> config/LocalSettings.php <<'PHP'
-
-/** Labki base configuration **/
-$wgEnableUploads = true;
-$wgMaxUploadSize = 1024 * 1024 * 100; // 100MB
-
-// Friendly URLs (serve from document root; no /w prefix)
-$wgScriptPath = "";
-$wgArticlePath = "/wiki/$1";
-$wgResourceBasePath = $wgScriptPath;
-
-// Extensions
-wfLoadExtension( 'ParserFunctions' );
-wfLoadExtension( 'Cite' );
-
-// VisualEditor deferred for composer-only minimal bring-up
-
-// Skin: keep default Vector 2022 until Chameleon is installed via Composer
-// wfLoadSkin( 'Chameleon' );
-// $wgDefaultSkin = 'chameleon';
-
-// (Semantic MediaWiki deferred for later composer setup)
-
-PHP
+# Always include Labki layered settings so our config is authoritative
+if ! grep -q "LocalSettings.labki.php" config/LocalSettings.php; then
+  {
+    echo "";
+    echo "// Include Labki layered settings (managed in git)";
+    echo "require_once __DIR__ . '/LocalSettings.labki.php';";
+  } >> config/LocalSettings.php
 fi
 
 echo "[install] Running maintenance/update.php to initialize database"
