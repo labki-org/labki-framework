@@ -6,7 +6,7 @@ This plan describes the concrete, actionable steps to bootstrap the Labki framew
 
 ### Scope and Goals
 
-- **Objective**: Deliver a reproducible base platform (Docker image + Compose) for MediaWiki configured for Labki, including initial extensions (VisualEditor, PageForms, MsUpload, ParserFunctions, Cite, Semantic MediaWiki), a modern skin (Chameleon or alternative), friendly URLs, uploads, and persistence.
+- **Objective**: Deliver a reproducible base platform (Docker image + Compose) for MediaWiki configured for Labki with friendly URLs, uploads, layered configuration, and persistence. Extensions/skins (Semantic MediaWiki, VisualEditor, MsUpload, Chameleon) are planned and will be added via Composer in subsequent milestones.
 - **Out of scope (initial phase)**: Implementing custom Labki importer extensions and publishing the content repository. We will, however, prepare placeholders and configuration hooks.
  - **Cross-platform target**: Development and usage on Windows (Docker Desktop), macOS (Docker Desktop), and Ubuntu/NVIDIA Jetson (ARM64) with parity.
 
@@ -17,12 +17,12 @@ This plan describes the concrete, actionable steps to bootstrap the Labki framew
 - **AC1 – Reproducible build**: `docker buildx build` produces a multi-arch image (amd64/arm64) tagged `labki/labki-wiki:dev` from this repo.
 - **AC2 – One-command run**: `docker compose up -d` starts MediaWiki (web) and MariaDB, with persistent volumes for `/images`, `LocalSettings.php`, and DB data.
 - **AC3 – Guided first run**: On first boot, automatic CLI install seeds `LocalSettings.php` from environment variables. Wiki is reachable at `http://localhost:8080/` (configurable) and has an admin user.
-- **AC4 – Extensions working**: VisualEditor (using built-in Parsoid), PageForms, MsUpload, ParserFunctions, and Cite are enabled and functioning.
-- **AC5 – Skin applied**: Chameleon (or fallback skin) is installed, selectable, and set as default; site is responsive.
+- **AC4 – Layered configuration**: The installer generates `LocalSettings.php` and includes tracked `config/LocalSettings.labki.php` so Labki settings apply without overwriting installer output.
+- **AC5 – Default skin and theming**: Vector 2022 is the default; alternative skins (e.g., Chameleon) are planned via Composer.
 - **AC6 – Friendly URLs**: Pages are accessible without `?title=`, e.g., `/wiki/Main_Page`.
 - **AC7 – Persistence**: File uploads and DB survive container restarts; configuration is re-usable across rebuilds.
 - **AC8 – Documentation**: Clear READMEs for build/run, configuration, and troubleshooting are present in-repo.
- - **AC9 – Semantic MediaWiki operational**: SMW is installed via Composer, enabled, database schema initialized, and Special:Version/Special:SMWAdmin confirm correct operation.
+  
 
 ---
 
