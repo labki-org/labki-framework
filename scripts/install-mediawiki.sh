@@ -9,8 +9,6 @@ php maintenance/install.php \
   --dbserver "${MW_DB_HOST:-db}" \
   --dbuser "${MW_DB_USER:-labki}" \
   --dbpass "${MW_DB_PASSWORD:-labki_pass}" \
-  --installdbuser root \
-  --installdbpass "${MARIADB_ROOT_PASSWORD:-root_pass}" \
   --server "${MW_SERVER:-http://localhost:8080}" \
   --scriptpath "${MW_SCRIPT_PATH:-/w}" \
   --lang "${MW_SITE_LANG:-en}" \

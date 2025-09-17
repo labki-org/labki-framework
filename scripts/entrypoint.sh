@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Wait for DB
+# Wait for DB using bash TCP check (avoids netcat dependency)
 echo "[entrypoint] Waiting for database at ${MW_DB_HOST:-db}:3306 ..."
 for i in {1..60}; do
-  if nc -z "${MW_DB_HOST:-db}" 3306 >/dev/null 2>&1; then
+  if (echo > "/dev/tcp/${MW_DB_HOST:-db}/3306") >/dev/null 2>&1; then
     echo "[entrypoint] Database is ready"
     break
   fi
