@@ -12,13 +12,9 @@ RUN apt-get update && apt-get install -y \
 # Fetch core extensions and skin (pinned shallow clones; pin to tags later)
 ## Extensions and skins are installed via Composer using composer.json
 
-# Composer
+# Composer (available but not invoked during minimal bring-up)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Install local composer dependencies (MediaWiki supports composer.local.json)
-COPY composer.local.json /var/www/html/composer.local.json
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN COMPOSER=composer.local.json composer install --no-interaction --no-dev --prefer-dist --no-progress || true
+# COPY composer.local.json /var/www/html/composer.local.json
 
 # Entrypoint + helper scripts
 COPY scripts/entrypoint.sh /entrypoint.sh

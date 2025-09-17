@@ -44,14 +44,12 @@ wfLoadExtension( 'MsUpload' );
 wfLoadSkin( 'Chameleon' );
 $wgDefaultSkin = 'chameleon';
 
-// Semantic MediaWiki
-wfLoadExtension( 'SemanticMediaWiki' );
-enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
+// (Semantic MediaWiki deferred for later composer setup)
 
 PHP
 fi
 
-echo "[install] Running maintenance/update.php to initialize database (incl. SMW)"
+echo "[install] Running maintenance/update.php to initialize database"
 php maintenance/update.php --quick
 
 echo "[install] LocalSettings.php configured and database updated"
