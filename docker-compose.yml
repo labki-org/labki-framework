@@ -1,9 +1,6 @@
 services:
   db:
     image: mariadb:10.6
-    restart: unless-stopped
-    env_file:
-      - config/secrets.env
     environment:
       MARIADB_DATABASE: ${MW_DB_NAME:-labki}
       MARIADB_USER: ${MW_DB_USER:-labki}
@@ -19,12 +16,20 @@ services:
       args:
         MEDIAWIKI_VERSION: ${MEDIAWIKI_VERSION:-1.41}
     image: labki/labki-wiki:dev
-    restart: unless-stopped
     ports:
       - "8080:80"
-    env_file:
-      - config/secrets.env
-    # All MW_* envs are provided via env_file; avoid compose-time interpolation
+    environment:
+      MW_SITE_NAME: ${MW_SITE_NAME:-Labki}
+      MW_SITE_LANG: ${MW_SITE_LANG:-en}
+      MW_ADMIN_USER: ${MW_ADMIN_USER:-admin}
+      MW_ADMIN_PASS: ${MW_ADMIN_PASS:-changeme}
+      MW_DB_NAME: ${MW_DB_NAME:-labki}
+      MW_DB_USER: ${MW_DB_USER:-labki}
+      MW_DB_PASSWORD: ${MW_DB_PASSWORD:-labki_pass}
+      MW_DB_HOST: db
+      MW_SERVER: ${MW_SERVER:-http://localhost:8080}
+      MW_SCRIPT_PATH: /w
+      MW_LOG_LEVEL: ${MW_LOG_LEVEL:-warning}
     volumes:
       - ./images:/var/www/html/images
       - ./config:/var/www/html/config

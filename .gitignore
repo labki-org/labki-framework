@@ -1,10 +1,8 @@
 # OS / Editor
 .DS_Store
 Thumbs.db
-desktop.ini
 .idea/
 .vscode/
-*.code-workspace
 *.swp
 *.swo
 
@@ -15,19 +13,11 @@ backups/
 
 # Environment files
 .env
-*.env
-.env.*
-!.env.example
 config/secrets.env
-config/secrets.env.*
 
 # Local config (generated or developer overrides)
 config/extra.php
 config/LocalSettings.php
-config/LocalSettings.php.bak
-*.bak
-config/*.local.php
-config/LocalSettings.local.php
 
 # Uploaded files (keep placeholder)
 images/*
@@ -39,11 +29,5 @@ vendor/
 
 # Compose overrides (optional local)
 docker-compose.override.yml
-
-# Temporary files
-*.tmp
-*.temp
-~$*
-
 
 
