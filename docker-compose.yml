@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mariadb:10.6
+    environment:
+      MARIADB_DATABASE: ${MW_DB_NAME:-labki}
+      MARIADB_USER: ${MW_DB_USER:-labki}
+      MARIADB_PASSWORD: ${MW_DB_PASSWORD:-labki_pass}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root_pass}
+    volumes:
+      - db-data:/var/lib/mysql
+
+  wiki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MEDIAWIKI_VERSION: ${MEDIAWIKI_VERSION:-1.41}
+    image: labki/labki-wiki:dev
+    ports:
+      - "8080:80"
+    environment:
+      MW_SITE_NAME: ${MW_SITE_NAME:-Labki}
+      MW_SITE_LANG: ${MW_SITE_LANG:-en}
+      MW_ADMIN_USER: ${MW_ADMIN_USER:-admin}
+      MW_ADMIN_PASS: ${MW_ADMIN_PASS:-changeme}
+      MW_DB_NAME: ${MW_DB_NAME:-labki}
+      MW_DB_USER: ${MW_DB_USER:-labki}
+      MW_DB_PASSWORD: ${MW_DB_PASSWORD:-labki_pass}
+      MW_DB_HOST: db
+      MW_SERVER: ${MW_SERVER:-http://localhost:8080}
+      MW_SCRIPT_PATH: /w
+      MW_LOG_LEVEL: ${MW_LOG_LEVEL:-warning}
+    volumes:
+      - ./images:/var/www/html/images
+      - ./config:/var/www/html/config
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+
+

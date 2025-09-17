@@ -1,0 +1,12 @@
+* text=auto
+
+# Enforce LF for scripts and YAML
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+Dockerfile text eol=lf
+
+# Keep Windows batch files with CRLF if added later
+*.bat eol=crlf
+
+
