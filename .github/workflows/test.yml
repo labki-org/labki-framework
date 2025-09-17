@@ -19,8 +19,10 @@ jobs:
           test -d config
       - name: Lint shell scripts (basic)
         run: |
-          echo "Checking scripts/*.sh exist and are executable";
-          test -x scripts/entrypoint.sh
-          test -x scripts/install-mediawiki.sh
+          echo "Syntax-checking scripts/*.sh";
+          for f in scripts/*.sh; do
+            test -f "$f";
+            bash -n "$f";
+          done
 
 
