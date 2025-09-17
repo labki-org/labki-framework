@@ -36,7 +36,6 @@ $wgArticlePath = "/wiki/$1";
 // Extensions
 wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'Cite' );
-wfLoadExtension( 'MsUpload' );
 
 // VisualEditor deferred for composer-only minimal bring-up
 
