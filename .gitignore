@@ -24,6 +24,8 @@ config/secrets.env.*
 # Local config (generated or developer overrides)
 config/extra.php
 config/LocalSettings.php
+config/LocalSettings.php.bak
+*.bak
 config/*.local.php
 config/LocalSettings.local.php
 
