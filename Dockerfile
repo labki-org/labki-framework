@@ -1,5 +1,5 @@
 ARG MEDIAWIKI_VERSION=1.41
-FROM mediawiki:${MEDIAWIKI_VERSION}-apache
+FROM mediawiki:${MEDIAWIKI_VERSION}
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
 # Fetch core extensions and skin (pinned shallow clones; pin to tags later)
 RUN set -euxo pipefail; \
     git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/VisualEditor extensions/VisualEditor; \
-    git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/PageForms extensions/PageForms; \
     git clone --depth 1 https://github.com/ProfessionalWiki/MsUpload.git extensions/MsUpload; \
     git clone --depth 1 https://github.com/ProfessionalWiki/chameleon.git skins/Chameleon
 

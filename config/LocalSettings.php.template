@@ -12,7 +12,6 @@ $wgDefaultSkin = 'chameleon';
 wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'Cite' );
 wfLoadExtension( 'MsUpload' );
-wfLoadExtension( 'PageForms' );
 wfLoadExtension( 'VisualEditor' );
 wfLoadSkin( 'Chameleon' );
 

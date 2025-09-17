@@ -41,7 +41,7 @@ On first run, the container installs MediaWiki and writes `config/LocalSettings.
 
 ### 4) Verify extensions and skin
 
-- Special:Version should list Semantic MediaWiki, VisualEditor, PageForms, MsUpload, ParserFunctions, Cite.
+- Special:Version should list Semantic MediaWiki, VisualEditor, MsUpload, ParserFunctions, Cite.
 - Special:SMWAdmin shows no pending setup tasks.
 - Switch skin to Chameleon under Preferences.
 

@@ -10,7 +10,7 @@ Labki is a customized, containerized MediaWiki distribution for lab knowledge ma
 
 - Dockerized MediaWiki with MariaDB
 - Multi-arch builds (amd64, arm64) for Windows PCs, macOS, and NVIDIA Jetson
-- Curated extensions: Semantic MediaWiki (SMW), VisualEditor, PageForms, MsUpload, ParserFunctions, Cite
+- Curated extensions: Semantic MediaWiki (SMW), VisualEditor, MsUpload, ParserFunctions, Cite
 - Modern responsive skin (Chameleon) with fallbacks
 - Friendly URLs, uploads, and persistent storage
 

@@ -37,7 +37,6 @@ $wgArticlePath = "/wiki/$1";
 wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'Cite' );
 wfLoadExtension( 'MsUpload' );
-wfLoadExtension( 'PageForms' );
 wfLoadExtension( 'VisualEditor' );
 
 // VisualEditor
