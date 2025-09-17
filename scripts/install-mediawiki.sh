@@ -37,11 +37,8 @@ $wgArticlePath = "/wiki/$1";
 wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'Cite' );
 wfLoadExtension( 'MsUpload' );
-wfLoadExtension( 'VisualEditor' );
 
-// VisualEditor
-$wgDefaultUserOptions['visualeditor-enable'] = 1;
-$wgVisualEditorEnableWikitext = true;
+// VisualEditor deferred for composer-only minimal bring-up
 
 // Skin
 wfLoadSkin( 'Chameleon' );
