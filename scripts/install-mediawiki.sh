@@ -40,9 +40,9 @@ wfLoadExtension( 'Cite' );
 
 // VisualEditor deferred for composer-only minimal bring-up
 
-// Skin
-wfLoadSkin( 'Chameleon' );
-$wgDefaultSkin = 'chameleon';
+// Skin: keep default Vector 2022 until Chameleon is installed via Composer
+// wfLoadSkin( 'Chameleon' );
+// $wgDefaultSkin = 'chameleon';
 
 // (Semantic MediaWiki deferred for later composer setup)
 

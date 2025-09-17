@@ -6,7 +6,7 @@ $wgEnableUploads = true;
 $wgArticlePath = "/wiki/$1";
 
 // Default skin preference (overridden if missing at runtime)
-$wgDefaultSkin = 'chameleon';
+// $wgDefaultSkin = 'chameleon';
 
 // Enable commonly-used extensions (these must be present in the image)
 wfLoadExtension( 'ParserFunctions' );
