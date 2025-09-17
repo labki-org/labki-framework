@@ -1,6 +1,7 @@
 services:
   db:
     image: mariadb:10.6
+    restart: unless-stopped
     env_file:
       - config/secrets.env
     environment:
@@ -18,6 +19,7 @@ services:
       args:
         MEDIAWIKI_VERSION: ${MEDIAWIKI_VERSION:-1.41}
     image: labki/labki-wiki:dev
+    restart: unless-stopped
     ports:
       - "8080:80"
     env_file:
