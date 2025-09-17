@@ -10,7 +10,7 @@ php maintenance/install.php \
   --dbuser "${MW_DB_USER:-labki}" \
   --dbpass "${MW_DB_PASSWORD:-labki_pass}" \
   --server "${MW_SERVER:-http://localhost:8080}" \
-  --scriptpath "${MW_SCRIPT_PATH:-/w}" \
+  --scriptpath "${MW_SCRIPT_PATH:-}" \
   --lang "${MW_SITE_LANG:-en}" \
   --pass "${MW_ADMIN_PASS:-changeme}" \
   "${MW_SITE_NAME:-Labki}" "${MW_ADMIN_USER:-admin}"
@@ -29,9 +29,10 @@ if ! grep -q "Labki base configuration" config/LocalSettings.php; then
 $wgEnableUploads = true;
 $wgMaxUploadSize = 1024 * 1024 * 100; // 100MB
 
-// Friendly URLs
-$wgScriptPath = getenv('MW_SCRIPT_PATH') ?: '/w';
+// Friendly URLs (serve from document root; no /w prefix)
+$wgScriptPath = "";
 $wgArticlePath = "/wiki/$1";
+$wgResourceBasePath = $wgScriptPath;
 
 // Extensions
 wfLoadExtension( 'ParserFunctions' );

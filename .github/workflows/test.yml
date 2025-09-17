@@ -15,5 +15,10 @@ jobs:
           test -f docker-compose.yml
           test -d scripts
           test -d config
+      - name: Lint shell scripts (basic)
+        run: |
+          echo "Checking scripts/*.sh exist and are executable";
+          test -x scripts/entrypoint.sh
+          test -x scripts/install-mediawiki.sh
 
 
