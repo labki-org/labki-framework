@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "**" ]
 
 jobs:
   build-image:
@@ -15,13 +15,22 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build (no push)
+      - name: Build image (load locally)
         uses: docker/build-push-action@v6
         with:
           context: .
           push: false
+          load: true
           build-args: |
             MEDIAWIKI_VERSION=1.41
           platforms: linux/amd64
+          tags: labki/labki-wiki:ci
+
+      - name: Smoke test image (php version)
+        run: docker run --rm --entrypoint php labki/labki-wiki:ci -v
+
+      - name: Verify entrypoint and MediaWiki files exist
+        run: |
+          docker run --rm --entrypoint bash labki/labki-wiki:ci -lc "test -x /entrypoint.sh && test -f /var/www/html/index.php && echo OK"
 
 

@@ -1,8 +1,10 @@
 name: test
 
 on:
+  push:
+    branches: [ "**" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "**" ]
 
 jobs:
   placeholder-tests:
@@ -15,5 +17,12 @@ jobs:
           test -f docker-compose.yml
           test -d scripts
           test -d config
+      - name: Lint shell scripts (basic)
+        run: |
+          echo "Syntax-checking scripts/*.sh";
+          for f in scripts/*.sh; do
+            test -f "$f";
+            bash -n "$f";
+          done
 
 

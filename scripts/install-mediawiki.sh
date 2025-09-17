@@ -9,10 +9,8 @@ php maintenance/install.php \
   --dbserver "${MW_DB_HOST:-db}" \
   --dbuser "${MW_DB_USER:-labki}" \
   --dbpass "${MW_DB_PASSWORD:-labki_pass}" \
-  --installdbuser root \
-  --installdbpass "${MARIADB_ROOT_PASSWORD:-root_pass}" \
   --server "${MW_SERVER:-http://localhost:8080}" \
-  --scriptpath "${MW_SCRIPT_PATH:-/w}" \
+  --scriptpath "${MW_SCRIPT_PATH:-}" \
   --lang "${MW_SITE_LANG:-en}" \
   --pass "${MW_ADMIN_PASS:-changeme}" \
   "${MW_SITE_NAME:-Labki}" "${MW_ADMIN_USER:-admin}"
@@ -23,41 +21,16 @@ if [ -f LocalSettings.php ]; then
   mv LocalSettings.php config/LocalSettings.php
 fi
 
-# Append Labki configuration if not already present
-if ! grep -q "Labki base configuration" config/LocalSettings.php; then
-  cat >> config/LocalSettings.php <<'PHP'
-
-/** Labki base configuration **/
-$wgEnableUploads = true;
-$wgMaxUploadSize = 1024 * 1024 * 100; // 100MB
-
-// Friendly URLs
-$wgScriptPath = getenv('MW_SCRIPT_PATH') ?: '/w';
-$wgArticlePath = "/wiki/$1";
-
-// Extensions
-wfLoadExtension( 'ParserFunctions' );
-wfLoadExtension( 'Cite' );
-wfLoadExtension( 'MsUpload' );
-wfLoadExtension( 'PageForms' );
-wfLoadExtension( 'VisualEditor' );
-
-// VisualEditor
-$wgDefaultUserOptions['visualeditor-enable'] = 1;
-$wgVisualEditorEnableWikitext = true;
-
-// Skin
-wfLoadSkin( 'Chameleon' );
-$wgDefaultSkin = 'chameleon';
-
-// Semantic MediaWiki
-wfLoadExtension( 'SemanticMediaWiki' );
-enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
-
-PHP
+# Always include Labki layered settings so our config is authoritative
+if ! grep -q "LocalSettings.labki.php" config/LocalSettings.php; then
+  {
+    echo "";
+    echo "// Include Labki layered settings (managed in git)";
+    echo "require_once __DIR__ . '/config/LocalSettings.labki.php';";
+  } >> config/LocalSettings.php
 fi
 
-echo "[install] Running maintenance/update.php to initialize database (incl. SMW)"
+echo "[install] Running maintenance/update.php to initialize database"
 php maintenance/update.php --quick
 
 echo "[install] LocalSettings.php configured and database updated"
