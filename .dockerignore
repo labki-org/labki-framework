@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# Node/composer caches (future-proof)
+node_modules
+vendor
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+
+# Local config and secrets (mounted at runtime)
+config/secrets.env
+config/LocalSettings.php
+config/extra.php
+
+# Compose files not needed in context (optional)
+docker-compose.override.yml
+
+# Images/uploads persist outside image
+images
+
+

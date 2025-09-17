@@ -1,0 +1,33 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs & backups
+logs/
+*.log
+backups/
+
+# Environment files
+.env
+config/secrets.env
+
+# Local config (generated or developer overrides)
+config/extra.php
+config/LocalSettings.php
+
+# Uploaded files (keep placeholder)
+images/*
+!images/.gitkeep
+
+# Dependency directories (future-proof)
+node_modules/
+vendor/
+
+# Compose overrides (optional local)
+docker-compose.override.yml
+
+
