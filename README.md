@@ -4,15 +4,15 @@ Labki is a customized, containerized MediaWiki distribution for lab knowledge ma
 
 ### Status
 
-- This repo is scaffolded for cross-platform development. The image and Compose stack will be iteratively completed to meet the initial setup plan in `LABKI_FRAMEWORK_INITIAL_SETUP_PLAN.md`.
+- Base MediaWiki runs in Docker (Windows/macOS/Ubuntu/Jetson) with MariaDB, friendly URLs, and persistent config/uploads. Settings are layered via `config/LocalSettings.labki.php`.
+- Extensions/skins listed below are planned; not yet installed by default. They will be added via Composer in subsequent steps.
 
 ### Features (initial scope)
 
 - Dockerized MediaWiki with MariaDB
 - Multi-arch builds (amd64, arm64) for Windows PCs, macOS, and NVIDIA Jetson
-- Curated extensions: Semantic MediaWiki (SMW), VisualEditor, PageForms, MsUpload, ParserFunctions, Cite
-- Modern responsive skin (Chameleon) with fallbacks
 - Friendly URLs, uploads, and persistent storage
+- Planned (not yet implemented): Semantic MediaWiki (SMW), VisualEditor, MsUpload, Chameleon skin (to be added via Composer)
 
 ### Repository Layout
 
@@ -27,7 +27,8 @@ labki-platform/
 │       ├── build.yml           # CI: build container on push/PR
 │       └── test.yml            # CI: placeholder for extension tests
 ├── config/
-│   ├── LocalSettings.php.template   # Base config (no secrets)
+│   ├── LocalSettings.labki.php      # Labki layered settings (tracked)
+│   ├── LocalSettings.php.template   # Example template (informational)
 │   ├── extra.php.example            # Optional overrides for local dev
 │   └── secrets.env.example          # Example env vars (DB pwd, OAuth keys)
 ├── extensions/
@@ -111,8 +112,9 @@ docker buildx build \
 
 - Copy `config/secrets.env.example` to `config/secrets.env` and adjust values.
 - `docker-compose.yml` reads credentials from this file.
-- `config/LocalSettings.php.template` contains Labki defaults; generated `LocalSettings.php` will extend/merge these in future steps.
-- Semantic MediaWiki (SMW) is installed via Composer in the image and enabled in `LocalSettings.php`; the first boot runs database updates to initialize SMW tables.
+- First run: the installer generates `config/LocalSettings.php`, and the entrypoint appends an include to `config/LocalSettings.labki.php` (tracked) so Labki’s settings apply without overwriting the installer output.
+- Paths: `$wgScriptPath = ""` (no `/w`), friendly URLs enabled.
+- Planned: SMW, VisualEditor, MsUpload, and Chameleon via Composer (not yet installed by default).
 
 ### Documentation
 
@@ -126,6 +128,11 @@ docker buildx build \
 - Port in use: change `8080:80` mapping in `docker-compose.yml`.
 - Permission issues on Windows bind mounts: run Docker Desktop as admin or switch to named volumes.
 - Slow ARM builds: prefer pre-built multi-arch images when available.
+
+### Reset options
+
+- Reset config only (forces re-install on next start): set `LABKI_RESET=1` when starting `wiki`.
+- Reset config + DB (requires root password in secrets): set `LABKI_RESET=1` and `LABKI_RESET_DB=1` when starting `wiki`.
 
 ### License
 
