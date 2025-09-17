@@ -73,4 +73,21 @@ docker compose down
 - If styles look broken, ensure `$wgScriptPath = ""` in `config/LocalSettings.php`, then restart `docker compose up -d wiki` and hard refresh with cache disabled.
 - If VisualEditor fails to load later, confirm `MW_SERVER` matches `http://localhost:8080` and retry.
 
+### 8) Optional reset flags
+
+For a clean reinstall without manually deleting files:
+
+```powershell
+# Reset LocalSettings and re-install on next start
+$env:LABKI_RESET = '1'
+docker compose up -d wiki
+
+# Also reset the DB (requires root password in config/secrets.env)
+$env:LABKI_RESET = '1'
+$env:LABKI_RESET_DB = '1'
+docker compose up -d wiki
+```
+
+Unset the variables (or open a new shell) for normal operation afterward.
+
 

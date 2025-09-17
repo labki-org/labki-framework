@@ -26,7 +26,7 @@ if ! grep -q "LocalSettings.labki.php" config/LocalSettings.php; then
   {
     echo "";
     echo "// Include Labki layered settings (managed in git)";
-    echo "require_once __DIR__ . '/LocalSettings.labki.php';";
+    echo "require_once __DIR__ . '/config/LocalSettings.labki.php';";
   } >> config/LocalSettings.php
 fi
 
