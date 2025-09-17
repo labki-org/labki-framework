@@ -1,0 +1,11 @@
+{
+  "name": "aharonilab/labki-framework",
+  "description": "Labki MediaWiki platform - base stack with pinned dependencies",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.1",
+    "mediawiki/semantic-media-wiki": "~4.1"
+  }
+}
+
