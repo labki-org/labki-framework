@@ -3,15 +3,15 @@
 Brief descriptions of each script used by the Labki MediaWiki stack.
 
 - entrypoint.sh
-  - Waits for the MariaDB service to become reachable on port 3306
-  - On first run (no `config/LocalSettings.php`), runs the installer
-  - Finally starts Apache (`apache2-foreground`)
+  - Authenticated DB wait (ensures credentials work)
+  - Optional reset flags: `LABKI_RESET=1` (reset config) and `LABKI_RESET_DB=1` (also reset DB)
+  - First run: runs installer; existing config + fresh DB: re-runs installer automatically
+  - Normalizes DB settings in `config/LocalSettings.php`, syncs to docroot, then starts Apache
 
 - install-mediawiki.sh
-  - Runs `php maintenance/install.php` using env vars (DB host/name/user/pass, site name, admin)
-  - Moves generated `LocalSettings.php` into the persisted `config/` directory
-  - Appends Labki defaults: uploads, short URLs, extensions (VisualEditor, PageForms, MsUpload, ParserFunctions, Cite), and Chameleon skin
-  - Enables Semantic MediaWiki (SMW) and runs `maintenance/update.php --quick` to initialize/update DB tables
+  - Runs `php maintenance/install.php` using env vars
+  - Moves generated `LocalSettings.php` into `config/`
+  - Appends `require_once __DIR__ . '/config/LocalSettings.labki.php';` to layer tracked Labki settings
 
 - init-db.sh
   - Optional helper that creates the database and user using MariaDB root credentials
