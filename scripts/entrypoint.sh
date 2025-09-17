@@ -17,6 +17,12 @@ pushd /var/www/html >/dev/null
 if [ ! -f config/LocalSettings.php ]; then
   echo "[entrypoint] No LocalSettings.php found; running installer"
   /install-mediawiki.sh
+else
+  # Ensure config matches current DB credentials; try a quick DB ping to avoid stale config crash
+  if ! MYSQL_PWD="${MW_DB_PASSWORD:-labki_pass}" mysql -h "${MW_DB_HOST:-db}" -u "${MW_DB_USER:-labki}" -e "SELECT 1" >/dev/null 2>&1; then
+    echo "[entrypoint] Database not reachable with current credentials; will retry on next start"
+    exit 1
+  fi
 fi
 
 # Ensure MediaWiki sees LocalSettings.php in document root

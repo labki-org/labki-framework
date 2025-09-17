@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /var/www/html
 
 RUN apt-get update && apt-get install -y \
-    git unzip ca-certificates \
+    git unzip ca-certificates mariadb-client \
  && rm -rf /var/lib/apt/lists/*
 
 # Fetch core extensions and skin (pinned shallow clones; pin to tags later)
