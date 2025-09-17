@@ -19,6 +19,14 @@ if [ ! -f config/LocalSettings.php ]; then
   /install-mediawiki.sh
 fi
 
+# Ensure MediaWiki sees LocalSettings.php in document root
+if [ -f config/LocalSettings.php ]; then
+  if [ ! -f LocalSettings.php ] || ! cmp -s config/LocalSettings.php LocalSettings.php; then
+    echo "[entrypoint] Syncing config/LocalSettings.php to document root"
+    cp -f config/LocalSettings.php LocalSettings.php
+  fi
+fi
+
 popd >/dev/null
 
 exec "$@"
