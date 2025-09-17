@@ -11,9 +11,9 @@ RUN apt-get update && apt-get install -y \
 
 # Fetch core extensions and skin (pinned shallow clones; pin to tags later)
 RUN set -euxo pipefail; \
-    git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/VisualEditor extensions/VisualEditor; \
-    git clone --depth 1 https://github.com/ProfessionalWiki/MsUpload.git extensions/MsUpload; \
-    git clone --depth 1 https://github.com/ProfessionalWiki/chameleon.git skins/Chameleon
+    if [ ! -d extensions/VisualEditor ]; then git clone --depth 1 https://gerrit.wikimedia.org/r/mediawiki/extensions/VisualEditor extensions/VisualEditor; fi; \
+    if [ ! -d extensions/MsUpload ]; then git clone --depth 1 https://github.com/ProfessionalWiki/MsUpload.git extensions/MsUpload; fi; \
+    if [ ! -d skins/Chameleon ]; then git clone --depth 1 https://github.com/ProfessionalWiki/chameleon.git skins/Chameleon; fi
 
 # Composer for Chameleon dependencies
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
