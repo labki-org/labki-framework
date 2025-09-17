@@ -2,21 +2,35 @@
 
 ### 1) Prerequisites
 
-- Windows/macOS: Docker Desktop
+- Windows/macOS: Docker Desktop (WSL2 backend recommended on Windows)
 - Ubuntu/Jetson: Docker Engine + Compose plugin; optional Buildx/QEMU for multi-arch
 
 ### 2) Clone and configure
 
+Windows (PowerShell):
+```powershell
+git clone https://github.com/Aharoni-Lab/labki-framework.git
+cd labki-framework
+copy config\secrets.env.example config\secrets.env
+```
+
+macOS/Linux:
 ```bash
-git clone https://github.com/your-org/labki-platform.git
-cd labki-platform
+git clone https://github.com/Aharoni-Lab/labki-framework.git
+cd labki-framework
 cp config/secrets.env.example config/secrets.env
 ```
 
-Edit `config/secrets.env` for site name, admin credentials, and DB passwords.
+Edit `config/secrets.env` for site name, admin credentials, and DB passwords. Ensure `MW_SERVER` matches your browser URL (e.g., `http://localhost:8080`).
 
 ### 3) Start the stack
 
+Windows (PowerShell):
+```powershell
+docker compose --env-file config\secrets.env up -d --build
+```
+
+macOS/Linux:
 ```bash
 docker compose --env-file config/secrets.env up -d --build
 ```
@@ -27,7 +41,8 @@ On first run, the container installs MediaWiki and writes `config/LocalSettings.
 
 ### 4) Verify extensions and skin
 
-- Special:Version should list VisualEditor, PageForms, MsUpload, ParserFunctions, Cite.
+- Special:Version should list Semantic MediaWiki, VisualEditor, PageForms, MsUpload, ParserFunctions, Cite.
+- Special:SMWAdmin shows no pending setup tasks.
 - Switch skin to Chameleon under Preferences.
 
 ### 5) Persistence
@@ -37,10 +52,24 @@ On first run, the container installs MediaWiki and writes `config/LocalSettings.
 
 ### 6) Common operations
 
+Windows (PowerShell):
+```powershell
+docker compose logs -f wiki
+docker compose restart wiki
+docker compose down
+```
+
+macOS/Linux:
 ```bash
 docker compose logs -f wiki
 docker compose restart wiki
 docker compose down
 ```
+
+### 7) Troubleshooting (Windows)
+
+- If bind-mount permissions cause issues, switch `./images` and `./config` to named volumes in `docker-compose.yml`.
+- Ensure `.sh` files have LF endings (repo enforces via `.gitattributes`).
+- If VisualEditor fails to load, confirm `MW_SERVER` matches `http://localhost:8080` and retry.
 
 
