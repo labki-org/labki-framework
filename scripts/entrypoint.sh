@@ -23,6 +23,11 @@ else
     echo "[entrypoint] Database not reachable with current credentials; will retry on next start"
     exit 1
   fi
+  # If core tables are missing (new DB with existing LocalSettings.php), initialize schema
+  if ! MYSQL_PWD="${MW_DB_PASSWORD:-labki_pass}" mysql -h "${MW_DB_HOST:-db}" -u "${MW_DB_USER:-labki}" -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='${MW_DB_NAME:-labki}' AND table_name='page';" | grep -q '^1$'; then
+    echo "[entrypoint] MediaWiki core tables not found; running maintenance/update.php"
+    php maintenance/update.php --quick
+  fi
 fi
 
 # Ensure MediaWiki sees LocalSettings.php in document root
