@@ -1,6 +1,8 @@
 services:
   db:
     image: mariadb:10.6
+    env_file:
+      - config/secrets.env
     environment:
       MARIADB_DATABASE: ${MW_DB_NAME:-labki}
       MARIADB_USER: ${MW_DB_USER:-labki}
@@ -18,6 +20,8 @@ services:
     image: labki/labki-wiki:dev
     ports:
       - "8080:80"
+    env_file:
+      - config/secrets.env
     environment:
       MW_SITE_NAME: ${MW_SITE_NAME:-Labki}
       MW_SITE_LANG: ${MW_SITE_LANG:-en}
