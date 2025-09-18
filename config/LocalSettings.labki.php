@@ -32,13 +32,17 @@ wfLoadExtension( 'Echo' );
 wfLoadExtension( 'VisualEditor' );
 wfLoadExtension( 'WikiEditor' );
 
-
+// Other extensions
 wfLoadExtension( 'MsUpload' );
 
-// Defer third-party extensions/skins until installed via Composer
+// Extensions for SWM
+wfLoadExtension( 'SemanticResultFormats' );
+wfLoadExtension( 'PageForms' );
+wfLoadExtension( 'Maps' );
+wfLoadExtension( 'SemanticExtraSpecialProperties' );
+wfLoadExtension( 'SemanticCompoundQueries' );
 
-// enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
-// wfLoadSkin( 'Chameleon' );
+// Skin
 wfLoadSkin( 'Citizen' );
 $wgDefaultSkin = 'citizen';
 
