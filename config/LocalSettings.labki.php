@@ -30,8 +30,8 @@ wfLoadExtension( 'MsUpload' );
 // wfLoadExtension( 'SemanticMediaWiki' );
 // enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
 // wfLoadSkin( 'Chameleon' );
-// wfLoadSkin( 'Citizen' );
-$wgDefaultSkin = 'vector-2022';
+wfLoadSkin( 'Citizen' );
+$wgDefaultSkin = 'citizen';
 
 // Developer diagnostics (toggle with LABKI_DEBUG=1)
 if ( getenv('LABKI_DEBUG') === '1' ) {

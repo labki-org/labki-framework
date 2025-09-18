@@ -27,11 +27,11 @@ RUN set -eux; \
     fi;
 
 # Install Citizen skin via git (no composer.json in repo)
-# RUN set -eux; \
-#    mkdir -p skins; \
-#    if [ ! -d skins/Citizen ]; then \
-#      git clone --depth=1 --branch v3.6.0 https://github.com/StarCitizenTools/mediawiki-skins-Citizen.git skins/Citizen; \
-#    fi;
+RUN set -eux; \
+    mkdir -p skins; \
+    if [ ! -d skins/Citizen ]; then \
+      git clone --depth=1 --branch v3.6.0 https://github.com/StarCitizenTools/mediawiki-skins-Citizen.git skins/Citizen; \
+    fi;
 
 # Fix ownership for webserver user
 RUN chown -R www-data:www-data extensions/ skins/ vendor/
