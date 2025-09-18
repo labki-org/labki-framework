@@ -39,11 +39,12 @@ Open `http://localhost:8080` (root) and `http://localhost:8080/index.php/Main_Pa
 
 On first run, the container installs MediaWiki and writes `config/LocalSettings.php`.
 
-### 4) Verify extensions and skin
+### 4) Verify extensions and features
 
-- Special:Version should list ParserFunctions, Cite. (SMW/VisualEditor/MsUpload will be added via Composer later.)
-- Special:SMWAdmin shows no pending setup tasks.
-- Switch skin to Chameleon under Preferences.
+- Special:Version should list ParserFunctions, Cite, VisualEditor, and MsUpload.
+- In the wikitext editor, drag-and-drop multiple files to upload (MsUpload).
+- Semantic MediaWiki (SMW) is not installed by default.
+- Optional: Switch skin to Chameleon under Preferences (if installed).
 
 ### 5) Persistence
 

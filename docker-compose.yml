@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        MEDIAWIKI_VERSION: ${MEDIAWIKI_VERSION:-1.41}
+        MEDIAWIKI_VERSION: ${MEDIAWIKI_VERSION:-1.44}
     image: labki/labki-wiki:dev
     restart: unless-stopped
     ports:

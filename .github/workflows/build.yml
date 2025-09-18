@@ -22,7 +22,7 @@ jobs:
           push: false
           load: true
           build-args: |
-            MEDIAWIKI_VERSION=1.41
+            MEDIAWIKI_VERSION=1.44
           platforms: linux/amd64
           tags: labki/labki-wiki:ci
 
