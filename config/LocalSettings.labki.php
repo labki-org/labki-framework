@@ -22,6 +22,8 @@ $wgMaxUploadSize = 1024 * 1024 * 100; // 100MB
 wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'Cite' );
 
+wfLoadExtension( 'VisualEditor' );
+
 // Defer third-party extensions/skins until installed via Composer
 // wfLoadExtension( 'MsUpload' );
 // wfLoadExtension( 'VisualEditor' );
