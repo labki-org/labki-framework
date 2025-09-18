@@ -22,17 +22,31 @@ if [ -f LocalSettings.php ]; then
 fi
 
 # Always include Labki layered settings so our config is authoritative
-if ! grep -q "LocalSettings.labki.php" config/LocalSettings.php; then
+if ! grep -q "config/LocalSettings.labki.php" config/LocalSettings.php; then
   {
     echo "";
-    echo "// Include Labki layered settings (managed in git)";
-    echo "require_once __DIR__ . '/config/LocalSettings.labki.php';";
+    echo "// Include Labki layered settings (managed in git) from either context";
+    echo "\$__LS_LABKI = __DIR__ . '/config/LocalSettings.labki.php';";
+    echo "if ( !file_exists(\$__LS_LABKI) ) {";
+    echo "    // If this file itself lives in /var/www/html/config, use the sibling file";
+    echo "    \$__LS_LABKI = __DIR__ . '/LocalSettings.labki.php';";
+    echo "}";
+    echo "require_once \$__LS_LABKI;";
+    echo "unset(\$__LS_LABKI);";
   } >> config/LocalSettings.php
 fi
 
-echo "[install] Running maintenance/update.php to initialize database"
-php maintenance/update.php --quick --conf config/LocalSettings.php
+echo "[install] Running maintenance/update.php (first pass)"
+php maintenance/update.php --quick --conf config/LocalSettings.php || true
+
+php extensions/SemanticMediaWiki/maintenance/setupStore.php --skip-optimize --conf config/LocalSettings.php
+
+echo "[install] Running maintenance/update.php (second pass)"
+php maintenance/update.php --quick --conf config/LocalSettings.php || true
 
 echo "[install] LocalSettings.php configured and database updated"
 
-
+if [ -d extensions/SemanticMediaWiki ]; then
+  echo "[install] Running SMW setupStore.php to finalize schema"
+  php extensions/SemanticMediaWiki/maintenance/setupStore.php --skip-optimize --conf config/LocalSettings.php
+fi
