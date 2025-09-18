@@ -21,9 +21,15 @@ $wgMaxUploadSize = 1024 * 1024 * 100; // 100MB
 // Core extensions that ship with MediaWiki
 wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'Cite' );
-
+wfLoadExtension( 'TemplateData' );
+wfLoadExtension( 'ReplaceText' );
+wfLoadExtension( 'Linter' );
+wfLoadExtension( 'DiscussionTools' );
+wfLoadExtension( 'Echo' );
 wfLoadExtension( 'VisualEditor' );
 wfLoadExtension( 'WikiEditor' );
+
+
 wfLoadExtension( 'MsUpload' );
 
 // Defer third-party extensions/skins until installed via Composer
