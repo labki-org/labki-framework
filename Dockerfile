@@ -14,7 +14,18 @@ RUN apt-get update && apt-get install -y \
 
 # Composer (available but not invoked during minimal bring-up)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-# COPY composer.local.json /var/www/html/composer.local.json
+COPY composer.local.json /var/www/html/composer.local.json
+
+# Install/Update core dependencies via Composer
+RUN composer update --no-dev --prefer-dist --no-interaction --no-progress
+
+# Install MsUpload (REL1_41) via git (no composer.json in repo)
+RUN set -eux; \
+    mkdir -p extensions; \
+    if [ ! -d extensions/MsUpload ]; then \
+      git clone --depth=1 --branch REL1_41 https://github.com/wikimedia/mediawiki-extensions-MsUpload.git extensions/MsUpload; \
+    fi; \
+    chown -R www-data:www-data extensions/ skins/ vendor/
 
 # Entrypoint + helper scripts
 COPY scripts/entrypoint.sh /entrypoint.sh

@@ -23,10 +23,10 @@ wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'Cite' );
 
 wfLoadExtension( 'VisualEditor' );
+wfLoadExtension( 'WikiEditor' );
+wfLoadExtension( 'MsUpload' );
 
 // Defer third-party extensions/skins until installed via Composer
-// wfLoadExtension( 'MsUpload' );
-// wfLoadExtension( 'VisualEditor' );
 // wfLoadExtension( 'SemanticMediaWiki' );
 // enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
 // wfLoadSkin( 'Chameleon' );
@@ -37,5 +37,17 @@ if ( getenv('LABKI_DEBUG') === '1' ) {
     $wgDebugToolbar = true;
     $wgResourceLoaderDebug = true;
 }
+
+# Core upload settings
+$wgEnableUploads = true;
+$wgGroupPermissions['user']['upload'] = true;
+
+# MsUpload recommended config
+$wgMSU_useDragDrop = true;
+$wgMSU_showAutoCat = true;
+$wgMSU_checkAutoCat = true;
+$wgMSU_confirmReplace = true;
+$wgMSU_imgParams = '400px';
+$wgMSU_uploadsize = '100mb';
 
 
