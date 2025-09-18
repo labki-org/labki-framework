@@ -31,7 +31,7 @@ if ! grep -q "LocalSettings.labki.php" config/LocalSettings.php; then
 fi
 
 echo "[install] Running maintenance/update.php to initialize database"
-php maintenance/update.php --quick
+php maintenance/update.php --quick --conf config/LocalSettings.php
 
 echo "[install] LocalSettings.php configured and database updated"
 

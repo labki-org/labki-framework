@@ -1,5 +1,9 @@
 {
   "require": {
-    "mediawiki/semantic-media-wiki": "~4.1"
+  },
+  "extra": {
+    "installer-paths": {
+      "extensions/{$name}/": ["type:mediawiki-extension"]
+    }
   }
 }

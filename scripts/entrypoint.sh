@@ -4,7 +4,7 @@ set -euo pipefail
 # Wait for DB using authenticated ping (avoids starting before creds work)
 echo "[entrypoint] Waiting for database auth at ${MW_DB_HOST:-db}:3306 ..."
 for i in {1..60}; do
-  if MYSQL_PWD="${MW_DB_PASSWORD:-labki_pass}" mysql -h "${MW_DB_HOST:-db}" -u "${MW_DB_USER:-labki}" -e "SELECT 1" >/dev/null 2>&1; then
+  if MYSQL_PWD="${MW_DB_PASSWORD:-labki_pass}" mysql --ssl=0 --protocol=TCP -h "${MW_DB_HOST:-db}" -u "${MW_DB_USER:-labki}" -e "SELECT 1" >/dev/null 2>&1; then
     echo "[entrypoint] Database is ready and credentials valid"
     break
   fi
@@ -29,7 +29,7 @@ if [ ! -f config/LocalSettings.php ]; then
   /install-mediawiki.sh
 else
   # If core tables are missing (new DB with existing LocalSettings.php), re-run installer
-  if ! MYSQL_PWD="${MW_DB_PASSWORD:-labki_pass}" mysql -h "${MW_DB_HOST:-db}" -u "${MW_DB_USER:-labki}" -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='${MW_DB_NAME:-labki}' AND table_name='page';" | grep -q '^1$'; then
+  if ! MYSQL_PWD="${MW_DB_PASSWORD:-labki_pass}" mysql --ssl=0 --protocol=TCP -h "${MW_DB_HOST:-db}" -u "${MW_DB_USER:-labki}" -N -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='${MW_DB_NAME:-labki}' AND table_name='page';" | grep -q '^1$'; then
     echo "[entrypoint] Fresh database detected with existing config; re-running installer to create core tables"
     mv -f config/LocalSettings.php config/LocalSettings.php.bak || true
     /install-mediawiki.sh
@@ -48,6 +48,9 @@ if [ -f config/LocalSettings.php ]; then
 fi
 
 popd >/dev/null
+
+echo "[entrypoint] Running maintenance/update.php (schema updates)"
+php /var/www/html/maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php || true
 
 exec "$@"
 
