@@ -33,8 +33,8 @@ wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'MsUpload' );
 
 // Defer third-party extensions/skins until installed via Composer
-// wfLoadExtension( 'SemanticMediaWiki' );
-// enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
+wfLoadExtension( 'SemanticMediaWiki' );
+enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
 // wfLoadSkin( 'Chameleon' );
 wfLoadSkin( 'Citizen' );
 $wgDefaultSkin = 'citizen';
@@ -57,5 +57,3 @@ $wgMSU_checkAutoCat = true;
 $wgMSU_confirmReplace = true;
 $wgMSU_imgParams = '400px';
 $wgMSU_uploadsize = '100mb';
-
-

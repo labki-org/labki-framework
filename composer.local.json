@@ -1,5 +1,6 @@
 {
   "require": {
+    "mediawiki/semantic-media-wiki": "~5.0"
   },
   "extra": {
     "installer-paths": {
