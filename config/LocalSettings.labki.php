@@ -15,6 +15,9 @@ $wgArticlePath = "/wiki/$1";
 $wgEnableUploads = true;
 $wgMaxUploadSize = 1024 * 1024 * 100; // 100MB
 
+wfLoadExtension( 'SemanticMediaWiki' );
+enableSemantics( $wgServer );
+
 // Default skin remains Vector until alternates are installed via Composer
 // $wgDefaultSkin = 'chameleon';
 
@@ -29,13 +32,17 @@ wfLoadExtension( 'Echo' );
 wfLoadExtension( 'VisualEditor' );
 wfLoadExtension( 'WikiEditor' );
 
-
+// Other extensions
 wfLoadExtension( 'MsUpload' );
 
-// Defer third-party extensions/skins until installed via Composer
-// wfLoadExtension( 'SemanticMediaWiki' );
-// enableSemantics( parse_url( getenv('MW_SERVER') ?: 'http://localhost:8080', PHP_URL_HOST ) ?: 'localhost' );
-// wfLoadSkin( 'Chameleon' );
+// Extensions for SWM
+wfLoadExtension( 'SemanticResultFormats' );
+wfLoadExtension( 'PageForms' );
+wfLoadExtension( 'Maps' );
+wfLoadExtension( 'SemanticExtraSpecialProperties' );
+wfLoadExtension( 'SemanticCompoundQueries' );
+
+// Skin
 wfLoadSkin( 'Citizen' );
 $wgDefaultSkin = 'citizen';
 
@@ -57,5 +64,3 @@ $wgMSU_checkAutoCat = true;
 $wgMSU_confirmReplace = true;
 $wgMSU_imgParams = '400px';
 $wgMSU_uploadsize = '100mb';
-
-
