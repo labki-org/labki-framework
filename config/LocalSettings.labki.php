@@ -34,6 +34,7 @@ wfLoadExtension( 'WikiEditor' );
 
 // Other extensions
 wfLoadExtension( 'MsUpload' );
+wfLoadExtension( 'LabkiPackManager' );
 
 // Extensions for SWM
 wfLoadExtension( 'SemanticResultFormats' );
