@@ -31,6 +31,7 @@ wfLoadExtension( 'DiscussionTools' );
 wfLoadExtension( 'Echo' );
 wfLoadExtension( 'VisualEditor' );
 wfLoadExtension( 'WikiEditor' );
+wfLoadExtension( 'Math' );
 
 // Other extensions
 wfLoadExtension( 'MsUpload' );
