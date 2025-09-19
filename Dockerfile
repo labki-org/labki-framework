@@ -26,7 +26,7 @@ RUN set -eux; \
       git clone --depth=1 --branch REL1_44 https://github.com/wikimedia/mediawiki-extensions-MsUpload.git extensions/MsUpload; \
     fi; \
     if [ ! -d extensions/LabkiPackManager ]; then \
-      git clone --depth=1 --branch main https://github.com/Aharoni-Lab/LabkiPackManager.git extensions/LabkiPackManager; \
+      git clone --depth=1 --branch feat/githubimport https://github.com/Aharoni-Lab/LabkiPackManager.git extensions/LabkiPackManager; \
     fi;
 
 # Install Citizen skin via git (no composer.json in repo)
