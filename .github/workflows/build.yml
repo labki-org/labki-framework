@@ -63,7 +63,7 @@ jobs:
             -e MARIADB_ROOT_PASSWORD=root_pass \
             mariadb:10.6
           for i in {1..60}; do
-            docker exec labki-ci-db mysql -ulabki -plabki_pass -e "SELECT 1" && break || sleep 2
+            docker exec labki-ci-db bash -lc 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -u root -e "SELECT 1"' && break || sleep 2
           done
 
       - name: Run wiki (built image)
@@ -81,13 +81,13 @@ jobs:
             -e MEDIAWIKI_VERSION=1.44 \
             -e LABKI_DEBUG=1 \
             labki/labki-wiki:ci
-          for i in {1..60}; do
+          for i in {1..20}; do
             curl -fsS http://localhost:8080/wiki/Main_Page && break || sleep 2
           done
 
       - name: Verify LabkiPackManager loaded (PHP, with retries)
         run: |
-          for i in {1..30}; do
+          for i in {1..20}; do
             if docker exec labki-ci-wiki php -r 'require "/var/www/html/includes/WebStart.php"; echo (MediaWiki\\Registration\\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK" : "");' | grep -q '^OK$'; then
               exit 0
             fi
