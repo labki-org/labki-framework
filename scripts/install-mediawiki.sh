@@ -50,3 +50,5 @@ if [ -d extensions/SemanticMediaWiki ]; then
   echo "[install] Running SMW setupStore.php to finalize schema"
   php extensions/SemanticMediaWiki/maintenance/setupStore.php --skip-optimize --conf config/LocalSettings.php
 fi
+
+php maintenance/run.php rebuildLocalisationCache

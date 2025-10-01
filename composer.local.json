@@ -5,11 +5,26 @@
     "mediawiki/page-forms": "~6",
     "mediawiki/maps": "~12",
     "mediawiki/semantic-extra-special-properties": "~4",
-    "mediawiki/semantic-compound-queries": "~3"
+    "mediawiki/semantic-compound-queries": "~3",
+    "wikimedia/composer-merge-plugin": "^2.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "wikimedia/composer-merge-plugin": true
+    }
   },
   "extra": {
     "installer-paths": {
       "extensions/{$name}/": ["type:mediawiki-extension"]
+    },
+    "merge-plugin": {
+      "include": [
+        "extensions/*/composer.json"
+      ],
+      "recurse": true,
+      "replace": false,
+      "merge-dev": false
     }
   }
 }
