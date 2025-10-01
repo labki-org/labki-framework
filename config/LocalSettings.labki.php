@@ -35,6 +35,7 @@ wfLoadExtension( 'Math' );
 
 // Other extensions
 wfLoadExtension( 'MsUpload' );
+wfLoadExtension( 'Mermaid' );
 wfLoadExtension( 'LabkiPackManager' );
 
 // Extensions for SWM

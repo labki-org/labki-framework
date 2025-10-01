@@ -6,7 +6,8 @@
     "mediawiki/maps": "~12",
     "mediawiki/semantic-extra-special-properties": "~4",
     "mediawiki/semantic-compound-queries": "~3",
-    "wikimedia/composer-merge-plugin": "^2.0"
+    "wikimedia/composer-merge-plugin": "^2.0",
+    "mediawiki/mermaid": "~6.0.1"
   },
   "config": {
     "allow-plugins": {
