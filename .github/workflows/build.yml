@@ -73,6 +73,7 @@ jobs:
             -e MW_SITE_LANG=en \
             -e MW_ADMIN_USER=admin \
             -e MW_ADMIN_PASS=DSnoSDNOiniwdw8392 \
+            -e MW_DB_HOST=labki-ci-db \
             -e MW_DB_NAME=labki \
             -e MW_DB_USER=labki \
             -e MW_DB_PASSWORD=labki_pass \
