@@ -62,14 +62,19 @@ jobs:
             -e MARIADB_PASSWORD=labki_pass \
             -e MARIADB_ROOT_PASSWORD=root_pass \
             mariadb:10.6
-          # Use socket connection inside the container (simpler & more reliable)
-          for i in {1..60}; do
-            docker exec labki-ci-db mysql -uroot -proot_pass -e "SELECT 1" && break || sleep 2
+          echo "[ci] Waiting for MariaDB (root via socket)";
+          for i in {1..120}; do
+            if docker exec labki-ci-db mysql -uroot -proot_pass -e "SELECT 1" >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
           done
+          echo "[ci] DB status:"; docker logs labki-ci-db | tail -n 50 || true
 
       - name: Run wiki (built image)
         run: |
           docker run -d --name labki-ci-wiki --network labki-ci -p 127.0.0.1:8080:80 \
+            -v "${GITHUB_WORKSPACE}/config:/var/www/html/config" \
             -e MW_SITE_NAME=Labki \
             -e MW_SITE_LANG=en \
             -e MW_ADMIN_USER=admin \
@@ -82,14 +87,19 @@ jobs:
             -e MEDIAWIKI_VERSION=1.44 \
             -e LABKI_DEBUG=1 \
             labki/labki-wiki:ci
+          echo "[ci] wiki container started"; docker ps -a || true
+          echo "[ci] Tailing wiki logs for first 30s"; timeout 30s docker logs -f labki-ci-wiki || true
           # Allow more time for initial install and Apache/PHP startup
           for i in {1..120}; do
-            curl -fsS http://localhost:8080/wiki/Main_Page && break || sleep 2
+            if curl -fsS http://localhost:8080/wiki/Main_Page >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
           done
 
       - name: Verify LabkiPackManager loaded (PHP, with retries)
         run: |
-          for i in {1..40}; do
+          for i in {1..60}; do
             if docker exec labki-ci-wiki php -r 'require "/var/www/html/includes/WebStart.php"; echo (MediaWiki\\Registration\\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK" : "");' | grep -q '^OK$'; then
               exit 0
             fi
