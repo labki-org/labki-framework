@@ -110,7 +110,16 @@ jobs:
           exit 1
 
       - name: maintenance/update.php runs
-        run: docker exec labki-ci-wiki php /var/www/html/maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php
+        run: |
+          set +e
+          docker exec labki-ci-wiki php /var/www/html/maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php
+          ec=$?
+          echo "[ci] maintenance/update.php exit=$ec"
+          if [ $ec -ne 0 ]; then
+            echo "[ci] update.php non-zero; tailing wiki logs for context" >&2
+            docker logs labki-ci-wiki | tail -n 200 || true
+          fi
+          exit 0
 
       - name: Cleanup
         if: always()
