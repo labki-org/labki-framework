@@ -7,30 +7,50 @@ on:
     branches: [ "**" ]
 
 jobs:
-  build-image:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build image (load locally)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: false
-          load: true
-          build-args: |
-            MEDIAWIKI_VERSION=1.44
-          platforms: linux/amd64
-          tags: labki/labki-wiki:ci
 
-      - name: Smoke test image (php version)
-        run: docker run --rm --entrypoint php labki/labki-wiki:ci -v
-
-      - name: Verify entrypoint and MediaWiki files exist
+      - name: Prepare secrets
         run: |
-          docker run --rm --entrypoint bash labki/labki-wiki:ci -lc "test -x /entrypoint.sh && test -f /var/www/html/index.php && echo OK"
+          cp config/secrets.env.example config/secrets.env
 
+      - name: Build and start containers (clean)
+        run: |
+          docker compose down -v || true
+          docker compose up -d --build
+          docker compose ps
+          echo "[ci] Waiting for wiki..."
+          for i in {1..120}; do
+            if curl -fsS http://localhost:8080/wiki/Main_Page >/dev/null 2>&1; then
+              echo "[ci] Wiki is up"
+              break
+            fi
+            sleep 2
+          done
 
+      - name: Ensure MediaWiki is installed (install or update)
+        run: |
+          docker compose exec -T wiki bash -lc '
+            if [ -f config/LocalSettings.php ]; then
+              echo "[ci] LocalSettings.php exists; running update.php";
+              php maintenance/update.php --quick --conf config/LocalSettings.php;
+            else
+              echo "[ci] No LocalSettings.php; running installer";
+              /install-mediawiki.sh;
+            fi'
+
+      - name: Verify LabkiPackManager extension loaded
+        run: |
+          docker compose exec -T wiki php maintenance/eval.php --conf /var/www/html/config/LocalSettings.php \
+            'echo (MediaWiki\Registration\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK\n" : "FAIL\n");'
+
+      - name: Run maintenance/update.php
+        run: |
+          docker compose exec -T wiki php maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose down -v

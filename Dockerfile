@@ -28,6 +28,9 @@ COPY composer.local.json /var/www/html/composer.local.json
 # Install/Update core + extensions dependencies via Composer (includes LabkiPackManager deps)
 RUN composer update --no-dev --prefer-dist --no-interaction --no-progress
 
+# Include layered Labki settings so installer include works in CI (no bind mount)
+COPY config/LocalSettings.labki.php /var/www/html/config/LocalSettings.labki.php
+
 # Install Citizen skin via git (no composer.json in repo)
 RUN set -eux; \
     mkdir -p skins; \
@@ -36,7 +39,7 @@ RUN set -eux; \
     fi
 
 # Fix ownership for webserver user
-RUN chown -R www-data:www-data extensions/ skins/ vendor/
+RUN chown -R www-data:www-data extensions/ skins/ vendor/ config/
 
 # Entrypoint + helper scripts
 COPY scripts/entrypoint.sh /entrypoint.sh

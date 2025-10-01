@@ -121,6 +121,7 @@ docker buildx build \
 - Installation guide: `docs/INSTALL.md`
 - Developer notes (Windows/Jetson/multi-arch): `docs/DEVELOP.md`
 - Content/Importer guidance (upcoming): `docs/CONTENT.md`
+- Testing (local + GitHub Actions): `docs/TESTING.md`
 - Overall plan: `LABKI_FRAMEWORK_INITIAL_SETUP_PLAN.md`
 
 ### Troubleshooting (common)
