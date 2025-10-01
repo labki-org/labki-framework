@@ -7,159 +7,57 @@ on:
     branches: [ "**" ]
 
 jobs:
-  build-image:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build image (load locally)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: false
-          load: true
-          build-args: |
-            MEDIAWIKI_VERSION=1.44
-          platforms: linux/amd64
-          tags: labki/labki-wiki:ci
 
-      - name: Smoke test image (php version)
-        run: docker run --rm --entrypoint php labki/labki-wiki:ci -v
-
-      - name: Verify entrypoint and MediaWiki files exist
-        run: |
-          docker run --rm --entrypoint bash labki/labki-wiki:ci -lc "test -x /entrypoint.sh && test -f /var/www/html/index.php && echo OK"
-
-  e2e-setup:
-    runs-on: ubuntu-latest
-    needs: build-image
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build image (load locally)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: false
-          load: true
-          build-args: |
-            MEDIAWIKI_VERSION=1.44
-          platforms: linux/amd64
-          tags: labki/labki-wiki:ci
-
-      - name: Start MariaDB
-        run: |
-          docker network create labki-ci || true
-          docker run -d --name labki-ci-db --network labki-ci \
-            -e MARIADB_DATABASE=labki \
-            -e MARIADB_USER=labki \
-            -e MARIADB_PASSWORD=labki_pass \
-            -e MARIADB_ROOT_PASSWORD=root_pass \
-            mariadb:10.6
-          echo "[ci] Waiting for MariaDB (root via socket)";
-          for i in {1..120}; do
-            if docker exec labki-ci-db mysql -uroot -proot_pass -e "SELECT 1" >/dev/null 2>&1; then
-              break
-            fi
-            sleep 2
-          done
-          echo "[ci] DB status:"; docker logs labki-ci-db | tail -n 50 || true
-
-      - name: Install MediaWiki (generate LocalSettings.php and prepare DB)
+      - name: Copy secrets.env for CI
         run: |
           mkdir -p config
-          docker run --rm --network labki-ci \
-            --entrypoint bash \
-            -v "${GITHUB_WORKSPACE}/config:/var/www/html/config" \
-            labki/labki-wiki:ci \
-            -c '
-              set -euo pipefail
-              cd /var/www/html
+          cp config/secrets.env.example config/secrets.env
 
-              php maintenance/install.php \
-                --dbtype mysql \
-                --dbname "labki" \
-                --dbserver "labki-ci-db" \
-                --dbuser "labki" \
-                --dbpass "labki_pass" \
-                --server "http://localhost:8080" \
-                --scriptpath /wiki \
-                --lang "en" \
-                --pass "DSnoSDNOiniwdw8392" \
-                "Labki" "admin"
-
-              if [ -f LocalSettings.php ]; then
-                mv LocalSettings.php config/LocalSettings.php
-              fi
-
-              if ! grep -q "config/LocalSettings.labki.php" config/LocalSettings.php; then
-                {
-                  echo "";
-                  echo "// Include Labki layered settings (managed in git)";
-                  echo "\$__LS_LABKI = __DIR__ . \"/config/LocalSettings.labki.php\";";
-                  echo "if (!file_exists(\$__LS_LABKI)) {";
-                  echo "  \$__LS_LABKI = __DIR__ . \"/LocalSettings.labki.php\";";
-                  echo "}";
-                  echo "require_once \$__LS_LABKI;";
-                  echo "unset(\$__LS_LABKI);";
-                } >> config/LocalSettings.php
-              fi
-
-              php maintenance/update.php --quick --conf config/LocalSettings.php || true
-              php extensions/SemanticMediaWiki/maintenance/setupStore.php --skip-optimize --conf config/LocalSettings.php
-              php maintenance/update.php --quick --conf config/LocalSettings.php || true
-              php maintenance/run.php rebuildLocalisationCache
-            '
-          echo "[ci] LocalSettings.php generated and DB prepared"
-
-      - name: Run wiki (built image)
+      - name: Build and start containers (detached)
         run: |
-          docker run -d --name labki-ci-wiki --network labki-ci -p 127.0.0.1:8080:80 \
-            -v "${GITHUB_WORKSPACE}/config:/var/www/html/config" \
-            -e MEDIAWIKI_VERSION=1.44 \
-            labki/labki-wiki:ci
-          echo "[ci] wiki container started"; docker ps -a || true
-          echo "[ci] Tailing wiki logs for first 30s"; timeout 30s docker logs -f labki-ci-wiki || true
+          docker compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml up -d
+          echo "[ci] Containers started"
+          docker compose ps
+
+      - name: Wait for wiki to be available
+        run: |
           for i in {1..120}; do
             if curl -fsS http://localhost:8080/wiki/Main_Page >/dev/null 2>&1; then
-              break
-            fi
-            sleep 2
-          done
-
-      - name: Verify LabkiPackManager loaded (PHP, with retries)
-        run: |
-          for i in {1..60}; do
-            if docker exec labki-ci-wiki php -r 'require "/var/www/html/includes/WebStart.php"; echo (MediaWiki\\Registration\\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK" : "");' | grep -q '^OK$'; then
+              echo "[ci] Wiki is up"
               exit 0
             fi
             sleep 2
           done
-          echo "Extension not loaded or wiki not initialized" >&2
-          docker logs labki-ci-wiki | tail -n 200 || true
+          echo "[ci] Wiki did not become available in time" >&2
+          docker compose logs
           exit 1
 
-      - name: maintenance/update.php runs
+      - name: Verify LabkiPackManager loaded
         run: |
-          set +e
-          docker exec labki-ci-wiki php /var/www/html/maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php
-          ec=$?
-          echo "[ci] maintenance/update.php exit=$ec"
-          if [ $ec -ne 0 ]; then
-            echo "[ci] update.php non-zero; tailing wiki logs for context" >&2
-            docker logs labki-ci-wiki | tail -n 200 || true
-          fi
-          exit 0
+          docker compose exec -T wiki php -r '
+            require "/var/www/html/includes/WebStart.php";
+            echo (MediaWiki\Registration\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK" : "FAIL");
+          '
+
+      - name: Run maintenance/update.php
+        run: |
+          docker compose exec -T wiki php /var/www/html/maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php || true
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
 
       - name: Cleanup
         if: always()
-        run: |
-          docker rm -f labki-ci-wiki || true
-          docker rm -f labki-ci-db || true
-          docker network rm labki-ci || true
+        run: docker compose down -v
