@@ -68,7 +68,7 @@ jobs:
 
       - name: Run wiki (built image)
         run: |
-          docker run -d --name labki-ci-wiki --network labki-ci -p 8080:80 \
+          docker run -d --name labki-ci-wiki --network labki-ci -p 127.0.0.1:8080:80 \
             -e MW_SITE_NAME=Labki \
             -e MW_SITE_LANG=en \
             -e MW_ADMIN_USER=admin \
@@ -85,15 +85,15 @@ jobs:
             curl -fsS http://localhost:8080/wiki/Main_Page && break || sleep 2
           done
 
-      - name: Special:Version shows LabkiPackManager (with retries)
+      - name: Verify LabkiPackManager loaded (PHP, with retries)
         run: |
-          for i in {1..60}; do
-            if curl -fsS "http://localhost:8080/index.php?title=Special:Version" | grep -q 'LabkiPackManager'; then
+          for i in {1..30}; do
+            if docker exec labki-ci-wiki php -r 'require "/var/www/html/includes/WebStart.php"; echo (MediaWiki\\Registration\\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK" : "");' | grep -q '^OK$'; then
               exit 0
             fi
             sleep 2
           done
-          echo "Special:Version not ready or LabkiPackManager not found" >&2
+          echo "Extension not loaded or wiki not initialized" >&2
           docker logs labki-ci-wiki | tail -n 200 || true
           exit 1
 
