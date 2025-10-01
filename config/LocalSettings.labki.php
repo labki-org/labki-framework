@@ -35,6 +35,7 @@ wfLoadExtension( 'Math' );
 
 // Other extensions
 wfLoadExtension( 'MsUpload' );
+wfLoadExtension( 'LabkiPackManager' );
 
 // Extensions for SWM
 wfLoadExtension( 'SemanticResultFormats' );
@@ -52,11 +53,15 @@ if ( getenv('LABKI_DEBUG') === '1' ) {
     $wgShowExceptionDetails = true;
     $wgDebugToolbar = true;
     $wgResourceLoaderDebug = true;
+    $wgLogExceptionBacktrace = true;
 }
 
 # Core upload settings
 $wgEnableUploads = true;
 $wgGroupPermissions['user']['upload'] = true;
+
+# LabkiPackManager settings
+$wgGroupPermissions['sysop']['labkipackmanager-manage'] = true;
 
 # MsUpload recommended config
 $wgMSU_useDragDrop = true;

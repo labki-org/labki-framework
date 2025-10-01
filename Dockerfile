@@ -9,29 +9,31 @@ RUN apt-get update && apt-get install -y \
     git unzip ca-certificates mariadb-client \
  && rm -rf /var/lib/apt/lists/*
 
-# Fetch core extensions and skin (pinned shallow clones; pin to tags later)
-## Extensions and skins are installed via Composer using composer.json
-
-# Composer (available but not invoked during minimal bring-up)
+# Composer (available in the image)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY composer.local.json /var/www/html/composer.local.json
 
-# Install/Update core dependencies via Composer
-RUN composer update --no-dev --prefer-dist --no-interaction --no-progress
-
-# Install MsUpload (REL1_44) via git (no composer.json in repo)
+# Clone extensions BEFORE composer update so merge-plugin can include their composer.json files
 RUN set -eux; \
     mkdir -p extensions; \
     if [ ! -d extensions/MsUpload ]; then \
       git clone --depth=1 --branch REL1_44 https://github.com/wikimedia/mediawiki-extensions-MsUpload.git extensions/MsUpload; \
-    fi;
+    fi; \
+    if [ ! -d extensions/LabkiPackManager ]; then \
+      git clone --depth=1 --branch main https://github.com/Aharoni-Lab/LabkiPackManager.git extensions/LabkiPackManager; \
+    fi
+
+# Provide composer.local.json that enables wikimedia/composer-merge-plugin and includes extensions/*/composer.json
+COPY composer.local.json /var/www/html/composer.local.json
+
+# Install/Update core + extensions dependencies via Composer (includes LabkiPackManager deps)
+RUN composer update --no-dev --prefer-dist --no-interaction --no-progress
 
 # Install Citizen skin via git (no composer.json in repo)
 RUN set -eux; \
     mkdir -p skins; \
     if [ ! -d skins/Citizen ]; then \
       git clone --depth=1 --branch v3.6.0 https://github.com/StarCitizenTools/mediawiki-skins-Citizen.git skins/Citizen; \
-    fi;
+    fi
 
 # Fix ownership for webserver user
 RUN chown -R www-data:www-data extensions/ skins/ vendor/
@@ -45,5 +47,3 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]
-
-
