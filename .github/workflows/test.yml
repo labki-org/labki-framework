@@ -39,7 +39,23 @@ jobs:
           fi
 
       - name: Validate docker-compose.yml
-        run: docker compose config -q
+        run: |
+          mkdir -p config
+          printf "%s\n" \
+            "MW_SITE_NAME=Labki" \
+            "MW_SITE_LANG=en" \
+            "MW_ADMIN_USER=admin" \
+            "MW_ADMIN_PASS=DSNoASDIOnw982D" \
+            "MW_DB_NAME=labki" \
+            "MW_DB_USER=labki" \
+            "MW_DB_PASSWORD=labki_pass" \
+            "MARIADB_ROOT_PASSWORD=root_pass" \
+            "MW_SERVER=http://localhost:8080" \
+            "MW_SCRIPT_PATH=" \
+            "MW_LOG_LEVEL=warning" \
+            "MEDIAWIKI_VERSION=1.44" \
+            > config/secrets.env
+          docker compose config -q
 
       - name: Lint Dockerfile with hadolint
         run: docker run --rm -i hadolint/hadolint < Dockerfile
