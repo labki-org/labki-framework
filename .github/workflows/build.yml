@@ -71,21 +71,57 @@ jobs:
           done
           echo "[ci] DB status:"; docker logs labki-ci-db | tail -n 50 || true
 
+      - name: Install MediaWiki (generate LocalSettings.php and prepare DB)
+        run: |
+          mkdir -p config
+          docker run --rm --network labki-ci \
+            -v "${GITHUB_WORKSPACE}/config:/var/www/html/config" \
+            labki/labki-wiki:ci \
+            bash -c '
+              set -euo pipefail
+              cd /var/www/html
+
+              php maintenance/install.php \
+                --dbtype mysql \
+                --dbname "labki" \
+                --dbserver "labki-ci-db" \
+                --dbuser "labki" \
+                --dbpass "labki_pass" \
+                --server "http://localhost:8080" \
+                --scriptpath /wiki \
+                --lang "en" \
+                --pass "DSnoSDNOiniwdw8392" \
+                "Labki" "admin"
+
+              if [ -f LocalSettings.php ]; then
+                mv LocalSettings.php config/LocalSettings.php
+              fi
+
+              if ! grep -q "config/LocalSettings.labki.php" config/LocalSettings.php; then
+                {
+                  echo "";
+                  echo "// Include Labki layered settings (managed in git)";
+                  echo "\$__LS_LABKI = __DIR__ . \"/config/LocalSettings.labki.php\";";
+                  echo "if (!file_exists(\$__LS_LABKI)) {";
+                  echo "  \$__LS_LABKI = __DIR__ . \"/LocalSettings.labki.php\";";
+                  echo "}";
+                  echo "require_once \$__LS_LABKI;";
+                  echo "unset(\$__LS_LABKI);";
+                } >> config/LocalSettings.php
+              fi
+
+              php maintenance/update.php --quick --conf config/LocalSettings.php || true
+              php extensions/SemanticMediaWiki/maintenance/setupStore.php --skip-optimize --conf config/LocalSettings.php
+              php maintenance/update.php --quick --conf config/LocalSettings.php || true
+              php maintenance/run.php rebuildLocalisationCache
+            '
+          echo "[ci] LocalSettings.php generated and DB prepared"
+
       - name: Run wiki (built image)
         run: |
           docker run -d --name labki-ci-wiki --network labki-ci -p 127.0.0.1:8080:80 \
             -v "${GITHUB_WORKSPACE}/config:/var/www/html/config" \
-            -e MW_SITE_NAME=Labki \
-            -e MW_SITE_LANG=en \
-            -e MW_ADMIN_USER=admin \
-            -e MW_ADMIN_PASS=DSnoSDNOiniwdw8392 \
-            -e MW_DB_HOST=labki-ci-db \
-            -e MW_DB_NAME=labki \
-            -e MW_DB_USER=labki \
-            -e MW_DB_PASSWORD=labki_pass \
-            -e MW_SERVER=http://localhost:8080 \
             -e MEDIAWIKI_VERSION=1.44 \
-            -e LABKI_DEBUG=1 \
             labki/labki-wiki:ci
           echo "[ci] wiki container started"; docker ps -a || true
           echo "[ci] Tailing wiki logs for first 30s"; timeout 30s docker logs -f labki-ci-wiki || true
@@ -95,24 +131,6 @@ jobs:
             fi
             sleep 2
           done
-
-      - name: Install MediaWiki (generate LocalSettings.php)
-        run: |
-          docker exec labki-ci-wiki php maintenance/install.php \
-            --dbtype mysql \
-            --dbserver labki-ci-db \
-            --dbname labki \
-            --dbuser labki \
-            --dbpass labki_pass \
-            --installdbuser root \
-            --installdbpass root_pass \
-            --server http://localhost:8080 \
-            --scriptpath /wiki \
-            --lang en \
-            "Labki" admin \
-            --pass DSnoSDNOiniwdw8392 \
-            --confpath /var/www/html/config
-          echo "[ci] LocalSettings.php generated"
 
       - name: Verify LabkiPackManager loaded (PHP, with retries)
         run: |
