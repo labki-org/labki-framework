@@ -30,10 +30,16 @@ jobs:
             sleep 2
           done
 
-      - name: Run MediaWiki installer
+      - name: Ensure MediaWiki is installed (install or update)
         run: |
-          docker compose exec -T wiki bash -c "/install-mediawiki.sh"
-          echo "[ci] LocalSettings.php generated and DB prepared"
+          docker compose exec -T wiki bash -lc '
+            if [ -f config/LocalSettings.php ]; then
+              echo "[ci] LocalSettings.php exists; running update.php";
+              php maintenance/update.php --quick --conf config/LocalSettings.php;
+            else
+              echo "[ci] No LocalSettings.php; running installer";
+              /install-mediawiki.sh;
+            fi'
 
       - name: Verify LabkiPackManager extension loaded
         run: |
