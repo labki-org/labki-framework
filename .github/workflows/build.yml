@@ -75,9 +75,10 @@ jobs:
         run: |
           mkdir -p config
           docker run --rm --network labki-ci \
+            --entrypoint bash \
             -v "${GITHUB_WORKSPACE}/config:/var/www/html/config" \
             labki/labki-wiki:ci \
-            bash -c '
+            -c '
               set -euo pipefail
               cd /var/www/html
 
