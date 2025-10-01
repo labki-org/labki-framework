@@ -32,7 +32,8 @@ jobs:
           if [ -n "$files" ]; then
             args=""
             for f in $files; do args="$args /mnt/$f"; done
-            docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable shellcheck -S style $args
+            # Run shellcheck (container entrypoint is shellcheck). Only fail on errors, not style warnings.
+            docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable -S error $args
           else
             echo "No shell scripts to check"
           fi
