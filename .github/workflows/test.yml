@@ -27,7 +27,15 @@ jobs:
 
       - name: ShellCheck scripts
         run: |
-          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable sh -lc 'shopt -s nullglob; shellcheck -S style /mnt/scripts/*.sh'
+          set -e
+          files=$(ls -1 scripts/*.sh 2>/dev/null || true)
+          if [ -n "$files" ]; then
+            args=""
+            for f in $files; do args="$args /mnt/$f"; done
+            docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable shellcheck -S style $args
+          else
+            echo "No shell scripts to check"
+          fi
 
       - name: Validate docker-compose.yml
         run: docker compose config -q
