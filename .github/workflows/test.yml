@@ -7,7 +7,7 @@ on:
     branches: [ "**" ]
 
 jobs:
-  placeholder-tests:
+  static-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,5 +24,22 @@ jobs:
             test -f "$f";
             bash -n "$f";
           done
+
+      - name: ShellCheck scripts
+        run: |
+          docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:stable sh -lc 'shopt -s nullglob; shellcheck -S style /mnt/scripts/*.sh'
+
+      - name: Validate docker-compose.yml
+        run: docker compose config -q
+
+      - name: Lint Dockerfile with hadolint
+        run: docker run --rm -i hadolint/hadolint < Dockerfile
+
+      - name: Validate composer.local.json
+        run: docker run --rm -v "$PWD:/app" -w /app composer:2 validate --no-check-publish composer.local.json
+
+      - name: PHP syntax check for tracked PHP files
+        run: |
+          docker run --rm -v "$PWD:/app" -w /app php:8.1-cli bash -lc 'set -e; files=$(git ls-files "*.php" || true); if [ -n "$files" ]; then for f in $files; do php -l "$f"; done; else echo "No PHP files"; fi'
 
 
