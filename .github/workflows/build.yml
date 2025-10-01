@@ -84,8 +84,17 @@ jobs:
             curl -fsS http://localhost:8080/wiki/Main_Page && break || sleep 2
           done
 
-      - name: Special:Version shows LabkiPackManager
-        run: curl -fsS "http://localhost:8080/index.php?title=Special:Version" | grep -q 'LabkiPackManager'
+      - name: Special:Version shows LabkiPackManager (with retries)
+        run: |
+          for i in {1..60}; do
+            if curl -fsS "http://localhost:8080/index.php?title=Special:Version" | grep -q 'LabkiPackManager'; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Special:Version not ready or LabkiPackManager not found" >&2
+          docker logs labki-ci-wiki | tail -n 200 || true
+          exit 1
 
       - name: maintenance/update.php runs
         run: docker exec labki-ci-wiki php /var/www/html/maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php
