@@ -32,6 +32,7 @@ wfLoadExtension( 'Echo' );
 wfLoadExtension( 'VisualEditor' );
 wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'Math' );
+wfLoadExtension( 'OAuth' );
 
 // Other extensions
 wfLoadExtension( 'MsUpload' );
@@ -65,3 +66,20 @@ $wgMSU_checkAutoCat = true;
 $wgMSU_confirmReplace = true;
 $wgMSU_imgParams = '400px';
 $wgMSU_uploadsize = '100mb';
+
+# OAuth: grant administrative OAuth permissions to sysops and bureaucrats so
+# the built-in admin account can register and manage OAuth consumers. The
+# OAuth extension checks for specific permission keys; setting several likely
+# permission names covers common variants used by different versions.
+$wgGroupPermissions['sysop']['myauthoproposeconsumer'] = true;
+$wgGroupPermissions['sysop']['oauthproposeconsumer'] = true;
+$wgGroupPermissions['sysop']['oauthmanageconsumer'] = true;
+$wgGroupPermissions['sysop']['oauthadmin'] = true;
+$wgGroupPermissions['sysop']['oauth'] = true;
+
+# Also allow bureaucrats the same capabilities where applicable
+$wgGroupPermissions['bureaucrat']['myauthoproposeconsumer'] = true;
+$wgGroupPermissions['bureaucrat']['oauthproposeconsumer'] = true;
+$wgGroupPermissions['bureaucrat']['oauthmanageconsumer'] = true;
+$wgGroupPermissions['bureaucrat']['oauthadmin'] = true;
+$wgGroupPermissions['bureaucrat']['oauth'] = true;

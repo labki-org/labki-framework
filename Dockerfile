@@ -26,6 +26,13 @@ RUN set -eux; \
       git clone --depth=1 --branch REL1_44 https://github.com/wikimedia/mediawiki-extensions-MsUpload.git extensions/MsUpload; \
     fi;
 
+# Install OAuth (REL1_44) via git (no composer.json in repo)
+RUN set -eux; \
+    mkdir -p extensions; \
+    if [ ! -d extensions/OAuth ]; then \
+      git clone --depth=1 --branch REL1_38 https://github.com/wikimedia/mediawiki-extensions-OAuth.git extensions/OAuth; \
+    fi;
+
 # Install Citizen skin via git (no composer.json in repo)
 RUN set -eux; \
     mkdir -p skins; \
