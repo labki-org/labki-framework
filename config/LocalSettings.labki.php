@@ -50,12 +50,16 @@ wfLoadSkin( 'Citizen' );
 $wgDefaultSkin = 'citizen';
 
 // Developer diagnostics (toggle with LABKI_DEBUG=1)
-if ( getenv('LABKI_DEBUG') === '1' ) {
-    $wgShowExceptionDetails = true;
-    $wgDebugToolbar = true;
-    $wgResourceLoaderDebug = true;
-    $wgLogExceptionBacktrace = true;
-}
+#if ( getenv('LABKI_DEBUG') === '1' ) {
+  #  $wgShowExceptionDetails = true;
+  #  $wgDebugToolbar = true;
+  #  $wgResourceLoaderDebug = true;
+  #  $wgLogExceptionBacktrace = true;
+#}
+$wgShowExceptionDetails = true;
+$wgDebugToolbar = true;
+$wgShowDebug = true;
+$wgDevelopmentWarnings = true;
 
 # Core upload settings
 $wgEnableUploads = true;
