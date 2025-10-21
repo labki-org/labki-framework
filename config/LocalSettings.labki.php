@@ -37,6 +37,7 @@ wfLoadExtension( 'Math' );
 wfLoadExtension( 'MsUpload' );
 wfLoadExtension( 'Mermaid' );
 wfLoadExtension( 'LabkiPackManager' );
+wfLoadExtension( 'PageSchemas' );
 
 // Extensions for SWM
 wfLoadExtension( 'SemanticResultFormats' );
