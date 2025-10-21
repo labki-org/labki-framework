@@ -25,7 +25,7 @@ RUN set -eux; \
 RUN set -eux; \
   mkdir -p extensions; \
   if [ ! -d extensions/PageSchemas ]; then \
-    git clone --depth=1 --branch REL1_44 https://gerrit.wikimedia.org/r/mediawiki/extensions/PageSchemas.git; \
+    git clone --depth=1 --branch REL1_44 https://gerrit.wikimedia.org/r/mediawiki/extensions/PageSchemas.git extensions/PageSchemas; \
   fi
 
 # Provide composer.local.json that enables wikimedia/composer-merge-plugin and includes extensions/*/composer.json
