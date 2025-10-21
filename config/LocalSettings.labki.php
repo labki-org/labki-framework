@@ -45,6 +45,7 @@ wfLoadExtension( 'PageForms' );
 wfLoadExtension( 'Maps' );
 wfLoadExtension( 'SemanticExtraSpecialProperties' );
 wfLoadExtension( 'SemanticCompoundQueries' );
+wfLoadExtension( 'PageSchemas' );
 
 // Skin
 wfLoadSkin( 'Citizen' );
