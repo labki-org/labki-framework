@@ -22,6 +22,12 @@ RUN set -eux; \
       git clone --depth=1 --branch main https://github.com/Aharoni-Lab/LabkiPackManager.git extensions/LabkiPackManager; \
     fi
 
+RUN set -eux; \
+  mkdir -p extensions; \
+  if [ ! -d extensions/PageSchemas ]; then \
+    git clone --depth=1 --branch REL1_44 https://gerrit.wikimedia.org/r/mediawiki/extensions/PageSchemas.git; \
+  fi
+
 # Provide composer.local.json that enables wikimedia/composer-merge-plugin and includes extensions/*/composer.json
 COPY composer.local.json /var/www/html/composer.local.json
 
