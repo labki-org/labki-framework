@@ -44,7 +44,7 @@ RUN set -eux; \
       git clone --depth=1 --branch v3.6.0 https://github.com/StarCitizenTools/mediawiki-skins-Citizen.git skins/Citizen; \
     fi; \
     if [ ! -d skins/Chameleon ]; then \
-      git clone --depth=1 https://github.com/ProfessionalWiki/chameleon.git skins/Chameleon; \
+      git clone --depth=1 --branch bs53 https://github.com/ProfessionalWiki/chameleon.git skins/Chameleon; \
     fi
 
 
