@@ -48,7 +48,9 @@ wfLoadExtension( 'SemanticCompoundQueries' );
 
 // Skin
 wfLoadSkin( 'Citizen' );
-$wgDefaultSkin = 'citizen';
+wfLoadSkin( 'Chameleon' );
+wfLoadSkin( 'Example' );
+$wgDefaultSkin = 'Example';
 
 // Developer diagnostics (toggle with LABKI_DEBUG=1)
 #if ( getenv('LABKI_DEBUG') === '1' ) {
