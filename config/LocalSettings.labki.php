@@ -45,22 +45,27 @@ wfLoadExtension( 'PageForms' );
 wfLoadExtension( 'Maps' );
 wfLoadExtension( 'SemanticExtraSpecialProperties' );
 wfLoadExtension( 'SemanticCompoundQueries' );
+wfLoadExtension( 'PageSchemas' );
 
 // Skin
 wfLoadSkin( 'Citizen' );
-$wgDefaultSkin = 'citizen';
+wfLoadSkin( 'Chameleon' );
+$wgDefaultSkin = 'Chameleon';
 
 // Developer diagnostics (toggle with LABKI_DEBUG=1)
-#if ( getenv('LABKI_DEBUG') === '1' ) {
-  #  $wgShowExceptionDetails = true;
-  #  $wgDebugToolbar = true;
-  #  $wgResourceLoaderDebug = true;
-  #  $wgLogExceptionBacktrace = true;
-#}
+if ( getenv('LABKI_DEBUG') === '1' ) {
+    $wgShowExceptionDetails = true;
+    $wgDebugToolbar = true;
+    $wgResourceLoaderDebug = true;
+    $wgLogExceptionBacktrace = true;
+}
+
 $wgShowExceptionDetails = true;
-$wgDebugToolbar = true;
-$wgShowDebug = true;
+$wgShowDBErrorBacktrace = true;
 $wgDevelopmentWarnings = true;
+error_reporting( -1 );
+ini_set( 'display_errors', 1 );
+
 
 # Core upload settings
 $wgEnableUploads = true;

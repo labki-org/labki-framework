@@ -37,12 +37,16 @@ RUN composer update --no-dev --prefer-dist --no-interaction --no-progress
 # Include layered Labki settings so installer include works in CI (no bind mount)
 COPY config/LocalSettings.labki.php /var/www/html/config/LocalSettings.labki.php
 
-# Install Citizen skin via git (no composer.json in repo)
+# Install skins via git (no composer.json in repo)
 RUN set -eux; \
     mkdir -p skins; \
     if [ ! -d skins/Citizen ]; then \
       git clone --depth=1 --branch v3.6.0 https://github.com/StarCitizenTools/mediawiki-skins-Citizen.git skins/Citizen; \
+    fi; \
+    if [ ! -d skins/Chameleon ]; then \
+      git clone --depth=1 --branch bs53 https://github.com/ProfessionalWiki/chameleon.git skins/Chameleon; \
     fi
+
 
 # Fix ownership for webserver user
 RUN chown -R www-data:www-data extensions/ skins/ vendor/ config/
