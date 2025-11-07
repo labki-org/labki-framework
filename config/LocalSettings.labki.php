@@ -49,8 +49,7 @@ wfLoadExtension( 'PageSchemas' );
 
 // Skin
 wfLoadSkin( 'Citizen' );
-wfLoadSkin( 'Example' );
-$wgDefaultSkin = 'Example';
+$wgDefaultSkin = 'Citizen';
 
 // Developer diagnostics (toggle with LABKI_DEBUG=1)
 if ( getenv('LABKI_DEBUG') === '1' ) {
