@@ -36,7 +36,10 @@ wfLoadExtension( 'Math' );
 // Other extensions
 wfLoadExtension( 'MsUpload' );
 wfLoadExtension( 'Mermaid' );
-wfLoadExtension( 'LabkiPackManager' );
+// Temporarily disable LabkiPackManager during initial DB upgrades: its bundled
+// sqlite schema is incompatible with MariaDB and blocks update.php. Re-enable
+// once a mysql-compatible schema is present.
+// wfLoadExtension( 'LabkiPackManager' );
 wfLoadExtension( 'PageSchemas' );
 
 // Extensions for SWM
@@ -45,22 +48,40 @@ wfLoadExtension( 'PageForms' );
 wfLoadExtension( 'Maps' );
 wfLoadExtension( 'SemanticExtraSpecialProperties' );
 wfLoadExtension( 'SemanticCompoundQueries' );
+wfLoadExtension( 'PageSchemas' );
 
 // Skin
+$bootstrapCfg = __DIR__ . '/../extensions/Bootstrap/extension.json';
+if ( file_exists( $bootstrapCfg ) ) {
+    wfLoadExtension( 'Bootstrap' );
+} else {
+    // If Bootstrap is missing, continue without it (instead use the Citizen skin).
+}
 wfLoadSkin( 'Citizen' );
-$wgDefaultSkin = 'citizen';
+
+$chameleonPath = __DIR__ . '/../skins/Chameleon/skin.json';
+if ( file_exists( $chameleonPath ) ) {
+    wfLoadSkin( 'Chameleon' );
+    $wgDefaultSkin = 'Chameleon';
+} else {
+    // Use Citizen if Chameleon isn't available yet.
+    $wgDefaultSkin = 'Citizen';
+}
 
 // Developer diagnostics (toggle with LABKI_DEBUG=1)
-#if ( getenv('LABKI_DEBUG') === '1' ) {
-  #  $wgShowExceptionDetails = true;
-  #  $wgDebugToolbar = true;
-  #  $wgResourceLoaderDebug = true;
-  #  $wgLogExceptionBacktrace = true;
-#}
+if ( getenv('LABKI_DEBUG') === '1' ) {
+    $wgShowExceptionDetails = true;
+    $wgDebugToolbar = true;
+    $wgResourceLoaderDebug = true;
+    $wgLogExceptionBacktrace = true;
+}
+
 $wgShowExceptionDetails = true;
-$wgDebugToolbar = true;
-$wgShowDebug = true;
+$wgShowDBErrorBacktrace = true;
 $wgDevelopmentWarnings = true;
+error_reporting( -1 );
+ini_set( 'display_errors', 1 );
+
 
 # Core upload settings
 $wgEnableUploads = true;
