@@ -19,8 +19,7 @@ wfLoadExtension( 'SemanticMediaWiki' );
 enableSemantics( $wgServer );
 
 // Default skin — we'll pick Chameleon when it's present, otherwise fall back
-// to the bundled Citizen skin. Set the actual default after checking files
-// so we never set a non-existent skin and cause a startup error.
+// to the Citizen skin. 
 // (Actual $wgDefaultSkin value is set below after probing files.)
 
 // Core extensions that ship with MediaWiki
@@ -82,7 +81,7 @@ if ( getenv('LABKI_DEBUG') === '1' ) {
 // Chameleon skin customization
 
 // Available layouts are registered below in $egChameleonAvailableLayoutFiles.
-$egChameleonLayoutFile = __DIR__ . '/../skins/Chameleon/layouts/standard.xml';
+$egChameleonLayoutFile = __DIR__ . '/../skins/Chameleon/layouts/navhead.xml';
 
 // Make the bundled layouts available to the uselayout URL parameter.
 $egChameleonAvailableLayoutFiles = [
@@ -99,10 +98,6 @@ $egChameleonAvailableLayoutFiles = [
 $egChameleonThemeFile = '';
 
 // Import additional SCSS files (path => position). Positions are optional.
-// Positions: beforeFunctions, functions, afterFunctions,
-//            beforeVariables, variables, afterVariables,
-//            beforeMain, main, afterMain
-// Example positions: variables override default variables and afterMain overrides styles.
 $egChameleonExternalStyleModules = [
     // Local themes and variable overrides (paths are relative to config/)
     // Load Google Fonts first so font-face rules are available to the page.
