@@ -1,0 +1,7 @@
+// Google Fonts import for Chameleon
+// This file is loaded into Chameleon's ResourceLoader chain. It imports
+// the Inter font (recommended) and Source Sans 3 as a fallback.
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Source+Sans+3:wght@400;600&display=swap');
+
+// Optionally define a small helper that can be used by other SCSS files.
+$google-fonts-loaded: true;
