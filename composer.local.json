@@ -7,7 +7,9 @@
     "mediawiki/semantic-extra-special-properties": "~4",
     "mediawiki/semantic-compound-queries": "~3",
     "wikimedia/composer-merge-plugin": "^2.0",
-    "mediawiki/mermaid": "~6.0.1"
+    "mediawiki/mermaid": "~6.0.1",
+    "mediawiki/bootstrap": "~5.0",
+    "scssphp/scssphp": "~1.11"
   },
   "config": {
     "allow-plugins": {

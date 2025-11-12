@@ -1,0 +1,10 @@
+{
+    "require": {
+        "mediawiki/bootstrap": "~5.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    }
+}
