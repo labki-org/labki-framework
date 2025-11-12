@@ -1,0 +1,38 @@
+// Local Chameleon custom SCSS variables
+// Edit values here; these override the defaults provided by Chameleon/Bootstrap.
+
+// Collapse breakpoint for switching between desktop and mobile layout
+$cmln-collapse-point: 980px; // slightly narrower breakpoint for this site
+
+// Color palette (brand / accents / text)
+$body-bg: #f7f8fb;          // page background
+$body-color: #222631;       // main body text color
+$brand-primary: #0b5f9b;    // primary brand color (buttons, links)
+$brand-accent: #e67e22;     // secondary / accent color
+$heading-color: #0b3b5a;    // headings
+
+// Link colors
+$link-color: $brand-primary;
+$link-hover-color: darken( $brand-primary, 8% );
+
+// Typography: 
+$font-family-base: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-size-base: 16px;
+
+// Header spacing and sizing
+$navbar-padding-y: 0.625rem; // a touch more vertical padding
+$navbar-padding-x: 1rem;
+
+// Container size tuning
+$container-max-width-lg: 1120px;
+
+// Small helper variables you may want to adjust
+$card-bg: #ffffff;
+$muted-color: #6b7280;
+
+// Example: adjust some Bootstrap variables that Chameleon consumes
+$body-bg: $body-bg;
+$text-color: $body-color;
+
+// NOTE: If you add new variables here and want instant rebuild during
+// development, touch this file (we register it as a cache trigger).

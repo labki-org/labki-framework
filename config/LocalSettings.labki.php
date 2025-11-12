@@ -61,7 +61,7 @@ if ( file_exists( $bootstrapCfg ) ) {
 
 $chameleonPath = __DIR__ . '/../skins/Chameleon/skin.json';
 // Prefer Chameleon when it's available and Bootstrap is installed. Fall back
-// to Citizen otherwise. These guards avoid fatal runtime errors when files
+// to Citizen otherwise to avoid fatal runtime errors when files
 // haven't been installed inside the container yet.
 if ( file_exists( $chameleonPath ) && file_exists( $bootstrapCfg ) ) {
     wfLoadSkin( 'Chameleon' );
@@ -77,6 +77,61 @@ if ( getenv('LABKI_DEBUG') === '1' ) {
     $wgDebugToolbar = true;
     $wgResourceLoaderDebug = true;
     $wgLogExceptionBacktrace = true;
+}
+
+// Chameleon skin customization
+
+// Available layouts are registered below in $egChameleonAvailableLayoutFiles.
+$egChameleonLayoutFile = __DIR__ . '/../skins/Chameleon/layouts/standard.xml';
+
+// Make the bundled layouts available to the uselayout URL parameter.
+$egChameleonAvailableLayoutFiles = [
+    'standard'   => __DIR__ . '/../skins/Chameleon/layouts/standard.xml',
+    'navhead'    => __DIR__ . '/../skins/Chameleon/layouts/navhead.xml',
+    'fixedhead'  => __DIR__ . '/../skins/Chameleon/layouts/fixedhead.xml',
+    'stickyhead' => __DIR__ . '/../skins/Chameleon/layouts/stickyhead.xml',
+    'clean'      => __DIR__ . '/../skins/Chameleon/layouts/clean.xml',
+];
+
+// Theme file: set to '' to use Bootstrap defaults, or point to a local SCSS
+// file to load a custom theme (absolute path recommended using __DIR__).
+// Example: $egChameleonThemeFile = __DIR__ . '/themes/united.scss';
+$egChameleonThemeFile = '';
+
+// Import additional SCSS files (path => position). Positions are optional.
+// Positions: beforeFunctions, functions, afterFunctions,
+//            beforeVariables, variables, afterVariables,
+//            beforeMain, main, afterMain
+// Example positions: variables override default variables and afterMain overrides styles.
+$egChameleonExternalStyleModules = [
+    // Local themes and variable overrides (paths are relative to config/)
+    // Load Google Fonts first so font-face rules are available to the page.
+    __DIR__ . '/themes/_google_fonts.scss' => 'beforeMain',
+    __DIR__ . '/themes/_local_variables.scss' => 'afterVariables',
+    // __DIR__ . '/../themes/custom_overrides.scss' => 'afterMain',
+];
+
+// Override SCSS variables without editing skin files. Omit the leading $.
+// Example: change collapse breakpoint used by Chameleon.
+$egChameleonExternalStyleVariables = [
+    'cmln-collapse-point' => '960px',
+    // 'body-bg' => '#ffffff',
+];
+
+// Trigger SCSS cache rebuild when a file changes. The Bootstrap manager can
+// watch a file to force a rebuild when it changes; pointing it at a theme
+// or an SCSS variables file is handy during development.
+if ( class_exists( '\\Bootstrap\\BootstrapManager' ) ) {
+    // Watch the default theme file (if present) so touching it rebuilds styles.
+    $trigger = __DIR__ . '/../skins/Chameleon/resources/styles/themes/_light.scss';
+    if ( file_exists( $trigger ) ) {
+        \Bootstrap\BootstrapManager::getInstance()->addCacheTriggerFile( $trigger );
+    }
+    // Also watch our local variables file so edits trigger a rebuild during dev.
+    $localVarTrigger = __DIR__ . '/themes/_local_variables.scss';
+    if ( file_exists( $localVarTrigger ) ) {
+        \Bootstrap\BootstrapManager::getInstance()->addCacheTriggerFile( $localVarTrigger );
+    }
 }
 
 $wgShowExceptionDetails = true;
