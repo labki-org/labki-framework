@@ -18,8 +18,10 @@ $wgMaxUploadSize = 1024 * 1024 * 100; // 100MB
 wfLoadExtension( 'SemanticMediaWiki' );
 enableSemantics( $wgServer );
 
-// Default skin remains Vector until alternates are installed via Composer
-// $wgDefaultSkin = 'chameleon';
+// Default skin — we'll pick Chameleon when it's present, otherwise fall back
+// to the bundled Citizen skin. Set the actual default after checking files
+// so we never set a non-existent skin and cause a startup error.
+// (Actual $wgDefaultSkin value is set below after probing files.)
 
 // Core extensions that ship with MediaWiki
 wfLoadExtension( 'ParserFunctions' );
@@ -53,21 +55,22 @@ wfLoadExtension( 'PageSchemas' );
 // Skin
 $bootstrapCfg = __DIR__ . '/../extensions/Bootstrap/extension.json';
 if ( file_exists( $bootstrapCfg ) ) {
+    // Load Bootstrap extension if present (Chameleon depends on it).
     wfLoadExtension( 'Bootstrap' );
-} else {
-    // If Bootstrap is missing, continue without it (instead use the Citizen skin).
 }
-wfLoadSkin( 'Citizen' );
 
 $chameleonPath = __DIR__ . '/../skins/Chameleon/skin.json';
-if ( file_exists( $chameleonPath ) ) {
+// Prefer Chameleon when it's available and Bootstrap is installed. Fall back
+// to Citizen otherwise. These guards avoid fatal runtime errors when files
+// haven't been installed inside the container yet.
+if ( file_exists( $chameleonPath ) && file_exists( $bootstrapCfg ) ) {
     wfLoadSkin( 'Chameleon' );
     $wgDefaultSkin = 'Chameleon';
 } else {
-    // Use Citizen if Chameleon isn't available yet.
+    // Keep the lightweight Citizen skin as a safe fallback.
+    wfLoadSkin( 'Citizen' );
     $wgDefaultSkin = 'Citizen';
 }
-
 // Developer diagnostics (toggle with LABKI_DEBUG=1)
 if ( getenv('LABKI_DEBUG') === '1' ) {
     $wgShowExceptionDetails = true;
