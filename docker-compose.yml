@@ -28,6 +28,7 @@ services:
     volumes:
       - ./images:/var/www/html/images
       - ./config:/var/www/html/config
+      - ./cache:/var/www/html/cache
     depends_on:
       - db
 
@@ -39,11 +40,13 @@ services:
     volumes:
       - ./images:/var/www/html/images
       - ./config:/var/www/html/config
+      - ./cache:/var/www/html/cache
     depends_on:
       - db
       - wiki
-    # Run only LabkiPackManager jobs
-    command: ["php", "maintenance/runJobs.php", "--wait", "--type=labkiRepoAdd", "--type=labkiRepoSync", "--type=labkiRepoRemove", "--type=labkiPackApply"]
+    # Run only LabkiPackManager jobs using wrapper script
+    # (MediaWiki's runJobs.php only accepts one --type at a time)
+    command: ["/run-jobrunner.sh"]
 
 volumes:
   db-data:

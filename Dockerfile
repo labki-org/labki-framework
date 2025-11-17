@@ -50,7 +50,8 @@ RUN chown -R www-data:www-data extensions/ skins/ vendor/ config/
 # Entrypoint + helper scripts
 COPY scripts/entrypoint.sh /entrypoint.sh
 COPY scripts/install-mediawiki.sh /install-mediawiki.sh
-RUN chmod +x /entrypoint.sh /install-mediawiki.sh
+COPY scripts/run-jobrunner.sh /run-jobrunner.sh
+RUN chmod +x /entrypoint.sh /install-mediawiki.sh /run-jobrunner.sh
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html
 
