@@ -31,6 +31,20 @@ services:
     depends_on:
       - db
 
+  wiki-jobrunner:
+    image: labki/labki-wiki:dev
+    restart: unless-stopped
+    env_file:
+      - config/secrets.env
+    volumes:
+      - ./images:/var/www/html/images
+      - ./config:/var/www/html/config
+    depends_on:
+      - db
+      - wiki
+    # Run only LabkiPackManager jobs
+    command: ["php", "maintenance/runJobs.php", "--wait", "--type=labkiRepoAdd", "--type=labkiRepoSync", "--type=labkiRepoRemove", "--type=labkiPackApply"]
+
 volumes:
   db-data:
 
