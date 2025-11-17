@@ -37,10 +37,7 @@ wfLoadExtension( 'Math' );
 // Other extensions
 wfLoadExtension( 'MsUpload' );
 wfLoadExtension( 'Mermaid' );
-// Temporarily disable LabkiPackManager during initial DB upgrades: its bundled
-// sqlite schema is incompatible with MariaDB and blocks update.php. Re-enable
-// once a mysql-compatible schema is present.
-// wfLoadExtension( 'LabkiPackManager' );
+wfLoadExtension( 'LabkiPackManager' );
 wfLoadExtension( 'PageSchemas' );
 
 // Extensions for SWM
@@ -142,6 +139,7 @@ $wgGroupPermissions['user']['upload'] = true;
 
 # LabkiPackManager settings
 $wgGroupPermissions['sysop']['labkipackmanager-manage'] = true;
+$wgLabkiEnableDBViewer = true;
 
 # MsUpload recommended config
 $wgMSU_useDragDrop = true;
@@ -150,3 +148,15 @@ $wgMSU_checkAutoCat = true;
 $wgMSU_confirmReplace = true;
 $wgMSU_imgParams = '400px';
 $wgMSU_uploadsize = '100mb';
+
+# === Job Queue Configuration ===
+# Disable job execution on web requests - jobs only run via maintenance/runJobs.php (jobrunner)
+$wgJobRunRate = 0;
+
+# Set cache directory to shared volume (accessible to jobrunner)
+$wgCacheDirectory = "$IP/cache";
+
+# Debug logging for LabkiPackManager and job queue
+$wgDebugLogGroups['labkipack'] = '/var/log/labkipack/labkipack.log';
+$wgDebugLogGroups['jobqueue'] = '/var/log/labkipack/jobqueue.log';
+$wgDebugLogGroups['runJobs'] = '/var/log/labkipack/runJobs.log';
