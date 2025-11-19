@@ -26,6 +26,9 @@ RUN set -eux; \
   mkdir -p extensions; \
   if [ ! -d extensions/PageSchemas ]; then \
     git clone --depth=1 --branch REL1_44 https://gerrit.wikimedia.org/r/mediawiki/extensions/PageSchemas.git extensions/PageSchemas; \
+  fi; \
+  if [ ! -d extensions/Lockdown ]; then \
+    git clone --depth=1 --branch REL1_44 https://gerrit.wikimedia.org/r/mediawiki/extensions/Lockdown.git extensions/Lockdown; \
   fi
 
 # Provide composer.local.json that enables wikimedia/composer-merge-plugin and includes extensions/*/composer.json
@@ -50,7 +53,8 @@ RUN chown -R www-data:www-data extensions/ skins/ vendor/ config/
 # Entrypoint + helper scripts
 COPY scripts/entrypoint.sh /entrypoint.sh
 COPY scripts/install-mediawiki.sh /install-mediawiki.sh
-RUN chmod +x /entrypoint.sh /install-mediawiki.sh
+COPY scripts/run-jobrunner.sh /run-jobrunner.sh
+RUN chmod +x /entrypoint.sh /install-mediawiki.sh /run-jobrunner.sh
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html
 

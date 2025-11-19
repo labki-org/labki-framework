@@ -33,6 +33,9 @@ config/LocalSettings.local.php
 images/*
 !images/.gitkeep
 
+# Cache directory (shared between wiki and jobrunner)
+cache/
+
 # Dependency directories (future-proof)
 node_modules/
 vendor/
