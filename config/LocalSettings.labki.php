@@ -39,6 +39,7 @@ wfLoadExtension( 'MsUpload' );
 wfLoadExtension( 'Mermaid' );
 wfLoadExtension( 'LabkiPackManager' );
 wfLoadExtension( 'PageSchemas' );
+wfLoadExtension( 'Lockdown' );
 
 // Extensions for SWM
 wfLoadExtension( 'SemanticResultFormats' );
