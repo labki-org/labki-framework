@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Job runner wrapper that processes multiple LabkiPackManager job types
-# MediaWiki's runJobs.php only accepts one --type at a time, so we loop through them
+# General job runner that processes all MediaWiki jobs
+# Uses --wait to continuously process jobs as they're queued
 
 cd /var/www/html
 
@@ -12,23 +12,17 @@ if [ ! -f LocalSettings.php ] && [ -f config/LocalSettings.php ]; then
   chmod 644 LocalSettings.php || true
 fi
 
-# Job types to process
-JOB_TYPES=("labkiRepoAdd" "labkiRepoSync" "labkiRepoRemove" "labkiPackApply")
+echo "[jobrunner] Starting MediaWiki job runner..."
+echo "[jobrunner] Will process all job types continuously"
 
-echo "[jobrunner] Starting LabkiPackManager job runner..."
-echo "[jobrunner] Will process job types: ${JOB_TYPES[*]}"
-
-# Run job runner for each type in a continuous loop
-# Use --maxjobs=1 per type to avoid blocking, then move to next type
-while true; do
-  for job_type in "${JOB_TYPES[@]}"; do
-    echo "[jobrunner] Checking for jobs of type: $job_type"
-    # Process one job of this type, or wait briefly if none available
-    # Use --conf to explicitly point to config file
-    php maintenance/runJobs.php --conf /var/www/html/config/LocalSettings.php --type="$job_type" --maxjobs=2 --maxtime=20 || true
-  done
-  
-  # Small delay between cycles to avoid tight loops when no jobs available
-  sleep 2
-done
+# Run job runner continuously with --wait flag
+# --wait: Wait for new jobs instead of exiting when queue is empty
+# --maxjobs: Process up to 20 jobs per run before checking for new jobs
+# --maxtime: Maximum 5 minutes per run before checking for new jobs
+php maintenance/runJobs.php \
+  --conf /var/www/html/config/LocalSettings.php \
+  --wait \
+  --maxjobs=20 \
+  --maxtime=300 \
+  || true
 
