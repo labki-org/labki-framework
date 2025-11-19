@@ -19,6 +19,9 @@ php maintenance/install.php \
 if [ -f LocalSettings.php ]; then
   mkdir -p config
   mv LocalSettings.php config/LocalSettings.php
+  # Fix permissions: ensure readable by www-data (Apache) and jobrunner
+  chmod 644 config/LocalSettings.php || true
+  chown www-data:www-data config/LocalSettings.php || true
 fi
 
 # Always include Labki layered settings so our config is authoritative

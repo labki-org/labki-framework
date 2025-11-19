@@ -6,6 +6,12 @@ set -euo pipefail
 
 cd /var/www/html
 
+# Ensure LocalSettings.php exists (entrypoint should have created it, but double-check)
+if [ ! -f LocalSettings.php ] && [ -f config/LocalSettings.php ]; then
+  cp -f config/LocalSettings.php LocalSettings.php
+  chmod 644 LocalSettings.php || true
+fi
+
 # Job types to process
 JOB_TYPES=("labkiRepoAdd" "labkiRepoSync" "labkiRepoRemove" "labkiPackApply")
 
@@ -18,7 +24,8 @@ while true; do
   for job_type in "${JOB_TYPES[@]}"; do
     echo "[jobrunner] Checking for jobs of type: $job_type"
     # Process one job of this type, or wait briefly if none available
-    php maintenance/runJobs.php --type="$job_type" --maxjobs=2 --maxtime=20 || true
+    # Use --conf to explicitly point to config file
+    php maintenance/runJobs.php --conf /var/www/html/config/LocalSettings.php --type="$job_type" --maxjobs=2 --maxtime=20 || true
   done
   
   # Small delay between cycles to avoid tight loops when no jobs available
