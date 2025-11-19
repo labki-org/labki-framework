@@ -46,7 +46,7 @@ services:
       - wiki
     # Run only LabkiPackManager jobs using wrapper script
     # (MediaWiki's runJobs.php only accepts one --type at a time)
-    command: ["/run-jobrunner.sh"]
+    command: ["/scripts/run-jobrunner.sh"]
 
 volumes:
   db-data:

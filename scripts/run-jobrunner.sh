@@ -18,7 +18,7 @@ while true; do
   for job_type in "${JOB_TYPES[@]}"; do
     echo "[jobrunner] Checking for jobs of type: $job_type"
     # Process one job of this type, or wait briefly if none available
-    php maintenance/runJobs.php --type="$job_type" --maxjobs=2 --maxtime=20 || true
+    php maintenance/runJobs.php --conf config/LocalSettings.php --type="$job_type" --maxjobs=2 --maxtime=20 || true
   done
   
   # Small delay between cycles to avoid tight loops when no jobs available

@@ -40,7 +40,7 @@ wfLoadExtension( 'Mermaid' );
 wfLoadExtension( 'LabkiPackManager' );
 wfLoadExtension( 'PageSchemas' );
 
-// Extensions for SWM
+// Extensions for SMW
 wfLoadExtension( 'SemanticResultFormats' );
 wfLoadExtension( 'PageForms' );
 wfLoadExtension( 'Maps' );

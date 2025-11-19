@@ -48,12 +48,9 @@ RUN set -eux; \
 RUN chown -R www-data:www-data extensions/ skins/ vendor/ config/
 
 # Entrypoint + helper scripts
-COPY scripts/entrypoint.sh /entrypoint.sh
-COPY scripts/install-mediawiki.sh /install-mediawiki.sh
-COPY scripts/run-jobrunner.sh /run-jobrunner.sh
-RUN chmod +x /entrypoint.sh /install-mediawiki.sh /run-jobrunner.sh
+COPY --chmod=0755 scripts/*.sh /scripts/
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+ENTRYPOINT ["/scripts/entrypoint.sh"]
+CMD ["/scripts/run-wiki.sh"]
