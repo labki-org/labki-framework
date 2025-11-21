@@ -1,8 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /var/www/html
+pushd /var/www/html >/dev/null
 
+# Optional reset controls (for convenience during development)
+if [ "${LABKI_RESET:-0}" = "1" ]; then
+  echo "[entrypoint] LABKI_RESET=1: resetting LocalSettings and optional DB"
+  rm -f LocalSettings.php config/LocalSettings.php || true
+  if [ "${LABKI_RESET_DB:-0}" = "1" ] && [ -n "${MARIADB_ROOT_PASSWORD:-}" ]; then
+    echo "[entrypoint] LABKI_RESET_DB=1: dropping and recreating database ${MW_DB_NAME:-labki}"
+    MYSQL_PWD="${MARIADB_ROOT_PASSWORD}" mysql -h "${MW_DB_HOST:-db}" -u root -e "DROP DATABASE IF EXISTS \`${MW_DB_NAME:-labki}\`; CREATE DATABASE \`${MW_DB_NAME:-labki}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" || true
+  fi
+fi
+
+# use ./config/LocalSettings.php if present
+if [ -e ./config/LocalSettings.php ]; then
+  echo "config/LocalSettings.php present, not running first-install script"
+  /scripts/update-config.sh
+  popd >/dev/null
+  exit 0
+fi
+
+# Create and mutate LocalSettings.php
 php maintenance/install.php \
   --dbtype mysql \
   --dbname "${MW_DB_NAME:-labki}" \
@@ -14,12 +33,6 @@ php maintenance/install.php \
   --lang "${MW_SITE_LANG:-en}" \
   --pass "${MW_ADMIN_PASS:-changeme}" \
   "${MW_SITE_NAME:-Labki}" "${MW_ADMIN_USER:-admin}"
-
-# Move generated LocalSettings.php to persistent config and append Labki defaults
-if [ -f LocalSettings.php ]; then
-  mkdir -p config
-  mv LocalSettings.php config/LocalSettings.php
-fi
 
 # Always include Labki layered settings so our config is authoritative
 if ! grep -q "config/LocalSettings.labki.php" config/LocalSettings.php; then
@@ -36,19 +49,13 @@ if ! grep -q "config/LocalSettings.labki.php" config/LocalSettings.php; then
   } >> config/LocalSettings.php
 fi
 
-echo "[install] Running maintenance/update.php (first pass)"
-php maintenance/update.php --quick --conf config/LocalSettings.php || true
+# Copy image LocalSettings to config directory, which will become canonical in future startups.
+mkdir -p config
+cp -f  ./LocalSettings.php config/LocalSettings.php
 
-php extensions/SemanticMediaWiki/maintenance/setupStore.php --skip-optimize --conf config/LocalSettings.php
+# Extension-specific scripts
+bash /scripts/init-smw.sh
 
-echo "[install] Running maintenance/update.php (second pass)"
-php maintenance/update.php --quick --conf config/LocalSettings.php || true
+chown www-data LocalSettings.php
 
-echo "[install] LocalSettings.php configured and database updated"
-
-if [ -d extensions/SemanticMediaWiki ]; then
-  echo "[install] Running SMW setupStore.php to finalize schema"
-  php extensions/SemanticMediaWiki/maintenance/setupStore.php --skip-optimize --conf config/LocalSettings.php
-fi
-
-php maintenance/run.php rebuildLocalisationCache
+popd >/dev/null

@@ -12,6 +12,21 @@ JOB_TYPES=("labkiRepoAdd" "labkiRepoSync" "labkiRepoRemove" "labkiPackApply")
 echo "[jobrunner] Starting LabkiPackManager job runner..."
 echo "[jobrunner] Will process job types: ${JOB_TYPES[*]}"
 
+# wait for LocalSettings on first run 
+# the main mediawiki service will create LocalSettings in the mounted `config` directory,
+# and then we symlink it here
+if [ ! -e LocalSettings.php ]; then
+  while [ ! -e ./config/LocalSettings.php ]; do
+    echo "[jobrunner] config/LocalSettings.php not created yet, waiting for wiki to finish setup"
+    sleep 2
+  done 
+
+  # if a symlink doesn't exist, make it
+  if [ ! -L LocalSettings.php ]; then
+    ln -s ./config/LocalSettings.php ./LocalSettings.php
+  fi
+fi
+
 # Run job runner for each type in a continuous loop
 # Use --maxjobs=1 per type to avoid blocking, then move to next type
 while true; do

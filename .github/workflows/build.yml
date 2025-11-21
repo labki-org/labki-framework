@@ -17,38 +17,24 @@ jobs:
           cp config/secrets.env.example config/secrets.env
 
       - name: Build and start containers (clean)
+        id: composeUp
+        continue-on-error: true
         run: |
           docker compose down -v || true
-          docker compose up -d --build
+          docker compose up -d --build --wait
           docker compose ps
-          echo "[ci] Waiting for wiki..."
-          for i in {1..120}; do
-            if curl -fsS http://localhost:8080/wiki/Main_Page >/dev/null 2>&1; then
-              echo "[ci] Wiki is up"
-              break
-            fi
-            sleep 2
-          done
 
-      - name: Ensure MediaWiki is installed (install or update)
+      - name: Show Failed Healthcheck
+        if: steps.composeUp.outcome == 'failure'
         run: |
-          docker compose exec -T wiki bash -lc '
-            if [ -f config/LocalSettings.php ]; then
-              echo "[ci] LocalSettings.php exists; running update.php";
-              php maintenance/update.php --quick --conf config/LocalSettings.php;
-            else
-              echo "[ci] No LocalSettings.php; running installer";
-              /install-mediawiki.sh;
-            fi'
+          docker inspect labki-framework-wiki-1
+          docker compose logs wiki
+          exit 1
 
       - name: Verify LabkiPackManager extension loaded
         run: |
           docker compose exec -T wiki php maintenance/eval.php --conf /var/www/html/config/LocalSettings.php \
             'echo (MediaWiki\Registration\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK\n" : "FAIL\n");'
-
-      - name: Run maintenance/update.php
-        run: |
-          docker compose exec -T wiki php maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php
 
       - name: Cleanup
         if: always()
