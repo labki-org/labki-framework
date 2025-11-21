@@ -28,6 +28,7 @@ jobs:
         if: steps.composeUp.outcome == 'failure'
         run: |
           docker inspect labki-framework-wiki-1
+          docker compose logs wiki
           exit 1
 
       - name: Verify LabkiPackManager extension loaded
