@@ -27,7 +27,7 @@ jobs:
       - name: Show Failed Healthcheck
         if: steps.composeUp.outcome == 'failure'
         run: |
-          docker inspect wiki
+          docker inspect labki-framework-wiki-1
           exit 1
 
       - name: Verify LabkiPackManager extension loaded
