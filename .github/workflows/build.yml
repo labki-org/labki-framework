@@ -32,24 +32,17 @@ jobs:
 
       - name: Ensure MediaWiki is installed (install or update)
         run: |
-          docker compose exec -T wiki bash -lc '
-            if [ -f config/LocalSettings.php ]; then
-              echo "[ci] LocalSettings.php exists; running update.php";
-              php maintenance/update.php --quick --conf config/LocalSettings.php;
-            else
-              echo "[ci] No LocalSettings.php; running installer";
-              /install-mediawiki.sh;
-            fi'
+          main_page=$(curl --fail-with-body http://localhost:8080/wiki/Main_Page)
+          if [ "$(echo $main_page | grep -c 'LocalSettings.php not found')" -ge 1 ]; then
+            echo "Wiki running, but LocalSettings not created."
+            exit 1
+          fi
 
       - name: Verify LabkiPackManager extension loaded
         run: |
           docker compose exec -T wiki php maintenance/eval.php --conf /var/www/html/config/LocalSettings.php \
             'echo (MediaWiki\Registration\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK\n" : "FAIL\n");'
-
-      - name: Run maintenance/update.php
-        run: |
-          docker compose exec -T wiki php maintenance/update.php --quick --conf /var/www/html/config/LocalSettings.php
-
+            
       - name: Cleanup
         if: always()
         run: |
