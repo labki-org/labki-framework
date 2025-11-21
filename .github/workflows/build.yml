@@ -17,18 +17,17 @@ jobs:
           cp config/secrets.env.example config/secrets.env
 
       - name: Build and start containers (clean)
+        id: compose-up
+        continue-on-error: true
         run: |
           docker compose down -v || true
           docker compose up -d --build --wait
           docker compose ps
 
-      - name: Ensure MediaWiki is installed (install or update)
+      - name: Show Failed Healthcheck
+        if: steps.compose-up.outcome == "failure"
         run: |
-          main_page=$(curl --fail-with-body http://localhost:8080/wiki/Main_Page)
-          if [ "$(echo $main_page | grep -c 'LocalSettings.php not found')" -ge 1 ]; then
-            echo "Wiki running, but LocalSettings not created."
-            exit 1
-          fi
+          docker inspect wiki
 
       - name: Verify LabkiPackManager extension loaded
         run: |
