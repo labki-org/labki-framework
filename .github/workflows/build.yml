@@ -25,7 +25,7 @@ jobs:
           docker compose ps
 
       - name: Show Failed Healthcheck
-        if: steps.composeUp.outcome == "failure"
+        if: steps.composeUp.outcome == 'failure'
         run: |
           docker inspect wiki
           exit 1
