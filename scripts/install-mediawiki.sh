@@ -13,18 +13,15 @@ if [ "${LABKI_RESET:-0}" = "1" ]; then
   fi
 fi
 
-
 # don't install if localsettings present (as a symlink to mounted config directory)
-if [ -L LocalSettings.php ] && [ -e LocalSettings.php ]; then
-  echo "LocalSettings.php present, not running first-run install script"
+if [ -e ./config/LocalSettings.php ]; then
+  echo "config/LocalSettings.php present, not running first-install script"
+  /scripts/update-config.sh
   popd >/dev/null
   exit 0
-elif [ -L LocalSettings.php ]; then
-  # if the symlink exists, but the mounted config/LocalSettings.php doesn't, re-run install
-  echo "Mounted config/LocalSettings.php deleted but internal symlink exists, re-running installation"
-  rm LocalSettings.php
 fi
 
+# Create and mutate LocalSettings.php
 php maintenance/install.php \
   --dbtype mysql \
   --dbname "${MW_DB_NAME:-labki}" \
@@ -36,12 +33,6 @@ php maintenance/install.php \
   --lang "${MW_SITE_LANG:-en}" \
   --pass "${MW_ADMIN_PASS:-changeme}" \
   "${MW_SITE_NAME:-Labki}" "${MW_ADMIN_USER:-admin}"
-
-# Modify LocalSettings.php:
-# Make available in mapped volume `config` and use symlink internally
-mkdir -p config
-mv ./LocalSettings.php config/LocalSettings.php
-ln -s config/LocalSettings.php ./LocalSettings.php
 
 # Always include Labki layered settings so our config is authoritative
 if ! grep -q "config/LocalSettings.labki.php" config/LocalSettings.php; then
@@ -57,6 +48,10 @@ if ! grep -q "config/LocalSettings.labki.php" config/LocalSettings.php; then
     echo "unset(\$__LS_LABKI);";
   } >> config/LocalSettings.php
 fi
+
+# Copy image LocalSettings to config directory, which will become canonical in future startups.
+mkdir -p config
+cp -f  ./LocalSettings.php config/LocalSettings.php
 
 # Extension-specific scripts
 bash /scripts/init-smw.sh
