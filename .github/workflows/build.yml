@@ -17,7 +17,7 @@ jobs:
           cp config/secrets.env.example config/secrets.env
 
       - name: Build and start containers (clean)
-        id: compose-up
+        id: composeUp
         continue-on-error: true
         run: |
           docker compose down -v || true
@@ -25,9 +25,10 @@ jobs:
           docker compose ps
 
       - name: Show Failed Healthcheck
-        if: steps.compose-up.outcome == "failure"
+        if: steps.composeUp.outcome == "failure"
         run: |
           docker inspect wiki
+          exit 1
 
       - name: Verify LabkiPackManager extension loaded
         run: |
