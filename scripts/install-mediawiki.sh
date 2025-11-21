@@ -13,7 +13,7 @@ if [ "${LABKI_RESET:-0}" = "1" ]; then
   fi
 fi
 
-# don't install if localsettings present (as a symlink to mounted config directory)
+# use ./config/LocalSettings.php if present
 if [ -e ./config/LocalSettings.php ]; then
   echo "config/LocalSettings.php present, not running first-install script"
   /scripts/update-config.sh
