@@ -32,12 +32,12 @@ services:
     depends_on:
       - db
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:80/wiki/Main_Page | grep 'Main Page'"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:80/wiki/Main_Page | grep 'installed'"]
       interval: 60s
       timeout: 5s
-      retries: 10
-      start_period: 10m
-      start_interval: 1m
+      retries: 2
+      start_period: 2m
+      start_interval: 5s
 
   wiki-jobrunner:
     image: labki/labki-wiki:dev
