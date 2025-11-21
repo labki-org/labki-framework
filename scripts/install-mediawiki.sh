@@ -13,10 +13,16 @@ if [ "${LABKI_RESET:-0}" = "1" ]; then
   fi
 fi
 
-if [ -f LocalSettings.php ]; then
+
+# don't install if localsettings present (as a symlink to mounted config directory)
+if [ -L LocalSettings.php ] && [ -e LocalSettings.php ]; then
   echo "LocalSettings.php present, not running first-run install script"
   popd >/dev/null
   exit 0
+elif [ -L LocalSettings.php ]; then
+  # if the symlink exists, but the mounted config/LocalSettings.php doesn't, re-run install
+  echo "Mounted config/LocalSettings.php deleted but internal symlink exists, re-running installation"
+  rm LocalSettings.php
 fi
 
 php maintenance/install.php \
