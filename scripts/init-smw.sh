@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 echo "[smw] Initial setup of SemanticMediaWiki"
 
 echo "[install] Running maintenance/update.php (first pass)"
