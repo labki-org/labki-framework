@@ -31,6 +31,13 @@ services:
       - ./cache:/var/www/html/cache
     depends_on:
       - db
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:80/wiki/Main_Page | grep 'Main Page'"]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 1m
+      start_interval: 3s
 
   wiki-jobrunner:
     image: labki/labki-wiki:dev

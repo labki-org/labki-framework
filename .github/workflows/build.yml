@@ -19,16 +19,8 @@ jobs:
       - name: Build and start containers (clean)
         run: |
           docker compose down -v || true
-          docker compose up -d --build
+          docker compose up -d --build --wait
           docker compose ps
-          echo "[ci] Waiting for wiki..."
-          for i in {1..120}; do
-            if curl -fsS http://localhost:8080/wiki/Main_Page >/dev/null 2>&1; then
-              echo "[ci] Wiki is up"
-              break
-            fi
-            sleep 2
-          done
 
       - name: Ensure MediaWiki is installed (install or update)
         run: |
@@ -42,7 +34,7 @@ jobs:
         run: |
           docker compose exec -T wiki php maintenance/eval.php --conf /var/www/html/config/LocalSettings.php \
             'echo (MediaWiki\Registration\ExtensionRegistry::getInstance()->isLoaded("LabkiPackManager") ? "OK\n" : "FAIL\n");'
-            
+
       - name: Cleanup
         if: always()
         run: |
