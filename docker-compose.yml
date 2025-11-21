@@ -35,9 +35,9 @@ services:
       test: ["CMD-SHELL", "curl --fail http://localhost:80/wiki/Main_Page | grep 'Main Page'"]
       interval: 60s
       timeout: 5s
-      retries: 1
-      start_period: 4m
-      start_interval: 5s
+      retries: 10
+      start_period: 10m
+      start_interval: 1m
 
   wiki-jobrunner:
     image: labki/labki-wiki:dev
