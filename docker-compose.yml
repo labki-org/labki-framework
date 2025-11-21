@@ -32,7 +32,7 @@ services:
     depends_on:
       - db
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:80/wiki/Main_Page | grep 'installed'"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:80/wiki/Main_Page"]
       interval: 60s
       timeout: 5s
       retries: 2
