@@ -45,7 +45,7 @@ RUN set -eux; \
     fi
 
 # Fix ownership for webserver user
-RUN chown -R www-data:www-data extensions/ skins/ vendor/ config/
+RUN chown -R www-data:www-data extensions/ skins/ vendor/ config/ cache/
 
 # Entrypoint + helper scripts
 COPY --chmod=0755 scripts/*.sh /scripts/
