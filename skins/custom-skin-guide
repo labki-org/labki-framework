@@ -1,0 +1,282 @@
+<?php
+/**
+ * SimpleSkin - A customizable simple skin for labki
+ * 
+ * Overall file structure (for labki users not familiar with MediaWiki skin development):
+ * skins/SimpleSkin/
+ * ├── skin.json
+ * ├── SimpleSkin.php
+ * ├── includes/
+ * │   └── SimpleSkinTemplate.php
+ * ├── resources/
+ * │   ├── styles.css
+ * │   └── scripts.js
+ * └── templates/
+ *     └── skin.mustache
+ */
+
+// SimpleSkin.php - Main entry point 
+if ( function_exists( 'wfLoadSkin' ) ) {
+    wfLoadSkin( 'SimpleSkin' );
+    return;
+}
+
+/**
+ * skin.json - Skin registration file
+ * 
+ * {
+ *   "name": "SimpleSkin",
+ *   "version": "1.0.0",
+ *   "author": ["Krisha Aghi"],
+ *   "url": "https://www.mediawiki.org/wiki/Skin:SimpleSkin",
+ *   "descriptionmsg": "simpleskin-desc",
+ *   "namemsg": "skinname-simpleskin",
+ *   "license-name": "GPL-2.0-or-later",
+ *   "type": "skin",
+ *   "requires": {
+ *     "MediaWiki": ">= 1.39.0"
+ *   },
+ *   "ValidSkinNames": {
+ *     "simpleskin": {
+ *       "class": "SkinSimpleSkin",
+ *       "args": [
+ *         {
+ *           "name": "simpleskin",
+ *           "templateDirectory": "templates"
+ *         }
+ *       ]
+ *     }
+ *   },
+ *   "AutoloadNamespaces": {
+ *     "MediaWiki\\Skins\\SimpleSkin\\": "includes/"
+ *   },
+ *   "MessagesDirs": {
+ *     "SimpleSkin": ["i18n"]
+ *   },
+ *   "ResourceModules": {
+ *     "skins.simpleskin.styles": {
+ *       "class": "ResourceLoaderSkinModule",
+ *       "features": {
+ *         "normalize": true,
+ *         "elements": true,
+ *         "content": true,
+ *         "interface": true
+ *       },
+ *       "styles": {
+ *         "resources/styles.css": {
+ *           "media": "screen"
+ *         }
+ *       }
+ *     },
+ *     "skins.simpleskin.js": {
+ *       "scripts": ["resources/scripts.js"]
+ *     }
+ *   },
+ *   "ResourceModuleSkinStyles": {
+ *     "simpleskin": {
+ *       "+mediawiki.ui.button": "resources/buttons.css"
+ *     }
+ *   },
+ *   "manifest_version": 2
+ * }
+ */
+
+// includes/SkinSimpleSkin.php
+namespace MediaWiki\Skins\SimpleSkin;
+
+use SkinMustache;
+
+class SkinSimpleSkin extends SkinMustache {
+    
+    /**
+     * @inheritDoc
+     */
+    public function getTemplateData(): array {
+        $data = parent::getTemplateData();
+        
+        // Add custom data to pass to Mustache template
+        $data['custom-logo'] = $this->getLogoUrl();
+        $data['site-name'] = $this->msg( 'sitename' )->text();
+        $data['current-year'] = date('Y');
+        
+        // Add user information
+        $user = $this->getUser();
+        $data['is-logged-in'] = $user->isRegistered();
+        $data['username'] = $user->getName();
+        
+        return $data;
+    }
+    
+    /**
+     * Get logo URL
+     */
+    private function getLogoUrl(): string {
+        return $this->getConfig()->get( 'Logo' );
+    }
+}
+
+/**
+ * templates/skin.mustache - Main Mustache template
+ * 
+ * <!DOCTYPE html>
+ * <html lang="{{html-lang}}" dir="{{html-dir}}" class="client-{{html-user-language-name}}">
+ * <head>
+ *   <meta charset="{{html-charset}}">
+ *   <title>{{html-title}}</title>
+ *   {{{html-headelement}}}
+ * </head>
+ * <body class="{{html-body-classes}}">
+ *   
+ *   <div id="simple-wrapper">
+ *     <!-- Header -->
+ *     <header id="simple-header">
+ *       <div class="simple-container">
+ *         <div class="simple-logo">
+ *           <a href="{{data-main-page-href}}">
+ *             <img src="{{lab-logo}}" alt="{{site-name}}">
+ *           </a>
+ *         </div>
+ *         
+ *         <nav id="simple-nav">
+ *           {{{html-site-navigation}}}
+ *         </nav>
+ *         
+ *         <div class="simple-user-tools">
+ *           {{#is-logged-in}}
+ *             <span class="simple-username">{{username}}</span>
+ *           {{/is-logged-in}}
+ *           {{{html-user-links}}}
+ *         </div>
+ *       </div>
+ *     </header>
+ *     
+ *     <!-- Main Content -->
+ *     <main id="simple-content" class="simple-container">
+ *       <div class="simple-content-header">
+ *         <h1 id="firstHeading" class="firstHeading">
+ *           {{{html-title}}}
+ *         </h1>
+ *         
+ *         {{#html-subtitle}}
+ *           <div id="contentSub">{{{html-subtitle}}}</div>
+ *         {{/html-subtitle}}
+ *       </div>
+ *       
+ *       <!-- Content actions (edit, history, etc.) -->
+ *       <nav id="simple-content-navigation">
+ *         {{{html-content-navigation}}}
+ *       </nav>
+ *       
+ *       <!-- Site notices and indicators -->
+ *       {{#html-site-notice}}
+ *         <div id="siteNotice">{{{html-site-notice}}}</div>
+ *       {{/html-site-notice}}
+ *       
+ *       <div id="bodyContent" class="simple-body-content">
+ *         {{{html-body-content}}}
+ *       </div>
+ *       
+ *       <!-- Category links -->
+ *       {{#html-categories}}
+ *         <div id="catlinks">{{{html-categories}}}</div>
+ *       {{/html-categories}}
+ *     </main>
+ *     
+ *     <!-- Sidebar -->
+ *     <aside id="simple-sidebar">
+ *       {{{html-portals}}}
+ *     </aside>
+ *     
+ *     <!-- Footer -->
+ *     <footer id="simple-footer" class="simple-container">
+ *       <div class="simple-footer-info">
+ *         {{{html-footer-info}}}
+ *       </div>
+ *       <div class="simple-footer-icons">
+ *         {{{html-footer-icons}}}
+ *       </div>
+ *       <p class="simple-copyright">© {{current-year}} {{site-name}}</p>
+ *     </footer>
+ *   </div>
+ *   
+ *   {{{html-printtail}}}
+ * </body>
+ * </html>
+ */
+
+/**
+ * resources/styles.css - Basic styling
+ * 
+ * * {
+ *   box-sizing: border-box;
+ * }
+ * 
+ * body {
+ *   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+ *   line-height: 1.6;
+ *   margin: 0;
+ *   padding: 0;
+ *   background: #f5f5f5;
+ * }
+ * 
+ * .simple-container {
+ *   max-width: 1200px;
+ *   margin: 0 auto;
+ *   padding: 0 20px;
+ * }
+ * 
+ * #simple-header {
+ *   background: #fff;
+ *   border-bottom: 1px solid #ddd;
+ *   padding: 15px 0;
+ * }
+ * 
+ * #simple-header .simple-container {
+ *   display: flex;
+ *   align-items: center;
+ *   justify-content: space-between;
+ * }
+ * 
+ * .simple-logo img {
+ *   height: 40px;
+ * }
+ * 
+ * #simple-nav {
+ *   flex: 1;
+ *   margin: 0 20px;
+ * }
+ * 
+ * #simple-content {
+ *   background: #fff;
+ *   margin: 20px auto;
+ *   padding: 30px;
+ *   border-radius: 4px;
+ *   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+ * }
+ * 
+ * .firstHeading {
+ *   border-bottom: 1px solid #ddd;
+ *   padding-bottom: 10px;
+ *   margin-bottom: 20px;
+ * }
+ * 
+ * #simple-footer {
+ *   background: #333;
+ *   color: #fff;
+ *   padding: 20px 0;
+ *   margin-top: 40px;
+ *   text-align: center;
+ * }
+ */
+
+/**
+ * Installation instructions:
+ * 
+ * 1. Copy the SimpleSkin directory to the mediawiki/skins/ directory 
+ * 2. Add to LocalSettings.php:
+ *    wfLoadSkin( 'SimpleSkin' );
+ *    $wgDefaultSkin = 'simpleskin';
+ * 3. Navigate to Special:Version to verify installation
+ * 4. Clear cache if needed
+ */
+?>
