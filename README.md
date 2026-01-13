@@ -1,4 +1,6 @@
-## Labki Framework (labki-platform)
+This project is now archived. It has been moved over to labki-platform and labki repos in this same github org.
+
+## Labki Framework
 
 Labki is a customized, containerized MediaWiki distribution for lab knowledge management. This repository provides the base platform: a reproducible Docker image, a docker-compose setup (MediaWiki + MariaDB), curated extensions (including Semantic MediaWiki), a modern skin, and documentation to run on Windows (Docker Desktop), macOS (Docker Desktop), and Ubuntu/Jetson (ARM64).
 
