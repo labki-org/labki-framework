@@ -1,4 +1,4 @@
-This project is now archived. It has been moved over to labki-platform and labki repos in this same github org.
+This project is now archived. It has been moved over to 'labki-platform' and 'labki' repos in this same github org.
 
 ## Labki Framework
 
