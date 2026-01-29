@@ -31,6 +31,13 @@ services:
       - ./cache:/var/www/html/cache
     depends_on:
       - db
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:80/wiki/Main_Page"]
+      interval: 60s
+      timeout: 5s
+      retries: 2
+      start_period: 2m
+      start_interval: 5s
 
   wiki-jobrunner:
     image: labki/labki-wiki:dev
@@ -46,7 +53,7 @@ services:
       - wiki
     # Run only LabkiPackManager jobs using wrapper script
     # (MediaWiki's runJobs.php only accepts one --type at a time)
-    command: ["/run-jobrunner.sh"]
+    command: ["/scripts/run-jobrunner.sh"]
 
 volumes:
   db-data:

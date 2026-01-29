@@ -41,7 +41,7 @@ wfLoadExtension( 'LabkiPackManager' );
 wfLoadExtension( 'PageSchemas' );
 wfLoadExtension( 'Lockdown' );
 
-// Extensions for SWM
+// Extensions for SMW
 wfLoadExtension( 'SemanticResultFormats' );
 wfLoadExtension( 'PageForms' );
 wfLoadExtension( 'Maps' );
